@@ -62,6 +62,10 @@
       return Array.isArray(payload.orders) ? payload.orders : [];
     }
 
+    /**
+     * Returns all orders for an authenticated admin account.
+     * Differs from getOrdersForUser(), which only returns the current user's orders.
+     */
     async function getOrdersForAdmin() {
       const payload = await fetchJSON(`${apiBase}/admin/orders`, {
         headers: getAuthHeaders(),
