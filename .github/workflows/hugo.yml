@@ -1,0 +1,135 @@
+name: CloudShirt Hugo CI
+
+on:
+  push:
+    branches: ["main"]
+  pull_request:
+    branches: ["main"]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    name: Hugo Build and Docker
+    runs-on: ubuntu-latest
+    env:
+      HUGO_VERSION: 0.159.2
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Setup Go
+        uses: actions/setup-go@v5
+        with:
+          go-version: "1.24"
+
+      - name: Setup Hugo
+        run: |
+          wget -qO ${{ runner.temp }}/hugo.tar.gz \
+            "https://github.com/gohugoio/hugo/releases/download/v${HUGO_VERSION}/hugo_extended_${HUGO_VERSION}_linux-amd64.tar.gz"
+          tar -xzf ${{ runner.temp }}/hugo.tar.gz -C ${{ runner.temp }}
+          sudo mv ${{ runner.temp }}/hugo /usr/local/bin/hugo
+          hugo version
+
+      - name: Hugo module cache
+        uses: actions/cache@v4
+        with:
+          path: /root/.cache/hugo_cache
+          key: ${{ runner.os }}-hugo-${{ hashFiles('**/go.sum') }}
+          restore-keys: |
+            ${{ runner.os }}-hugo-
+
+      - name: Build Hugo site
+        env:
+          HUGO_ENVIRONMENT: production
+          HUGO_ENV: production
+        run: hugo --gc --minify
+
+      - name: Upload site artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: cloudshirt-hugo-site
+          path: ./public
+          retention-days: 7
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Build Docker image
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          file: ./Dockerfile
+          push: false
+          load: true
+          tags: cloudshirt-hugo:ci
+
+      - name: Scan Docker image (Trivy)
+        uses: aquasecurity/trivy-action@v0.35.0
+        with:
+          scan-type: image
+          image-ref: cloudshirt-hugo:ci
+          severity: HIGH,CRITICAL
+          ignore-unfixed: true
+          format: table
+          exit-code: "1"
+
+  pr-feedback:
+    name: PR Feedback Bot
+    if: always() && github.event_name == 'pull_request'
+    runs-on: ubuntu-latest
+    needs: [build]
+    permissions:
+      contents: read
+      pull-requests: write
+
+    steps:
+      - name: Post CI summary comment
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const marker = '<!-- cloudshirt-ci-feedback -->';
+            const owner = context.repo.owner;
+            const repo = context.repo.repo;
+            const issue_number = context.payload.pull_request.number;
+            const author = context.payload.pull_request.user.login;
+
+            const buildResult = '${{ needs.build.result }}';
+
+            let intro = buildResult === 'success'
+              ? `Hey @${author}, Hugo build en Docker checks zijn groen ✅`
+              : `Hey @${author}, er zijn problemen gevonden. Controleer de job logs in GitHub Actions.`;
+
+            const body = [
+              marker,
+              '## CI feedback',
+              '',
+              intro,
+              '',
+              `- Hugo build + Docker: ${buildResult}`,
+              '',
+              'Als een check failed is, open de job logs in GitHub Actions voor details.'
+            ].join('\n');
+
+            const comments = await github.rest.issues.listComments({
+              owner, repo, issue_number, per_page: 100
+            });
+
+            const existing = comments.data.find(
+              c => c.user?.login === 'github-actions[bot]' && c.body?.includes(marker)
+            );
+
+            if (existing) {
+              await github.rest.issues.updateComment({
+                owner, repo, comment_id: existing.id, body
+              });
+            } else {
+              await github.rest.issues.createComment({
+                owner, repo, issue_number, body
+              });
+            }

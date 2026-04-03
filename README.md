@@ -1,87 +1,83 @@
-# CloudShirt
+# CloudShirt – Hugo Edition
 
-Korte implementatierepository voor schoolopdrachten binnen de Cloud Engineering-specialisatie.
+Een lichte Hugo-website voor schoolopdrachten binnen de Cloud Engineering-specialisatie.
 
-Deze applicatie is gebaseerd op een Saxion-docentenvariant en door mij omgebouwd voor opdrachten in Cloud Automation Concepts onder de naam CloudShirt.
+Dit is de Hugo-variant van [CloudShirt](https://github.com/Stensel8/CloudShirt) – dezelfde inhoud, maar gegenereerd als statische site met [Hugo](https://gohugo.io/) en het [Hextra](https://imfing.github.io/hextra)-thema. Gebouwd om te deployen via Docker (nginx).
 
 Gekoppelde module-repository:
 - https://github.com/Stensel8/cloud-engineering/tree/main/cloud-automation-concepts
 
-Gebruik in opdrachten:
+## Gebruik in opdrachten
+
 - Assignment 1: AWS Basics
 - Assignment 2: Docker in the Cloud
 - Assignment 3: Cloud Orchestration
 
-## Starten en stoppen
+---
 
-Gebruik de scripts in de map scripts:
+## Lokale ontwikkeling
 
-```powershell
-.\scripts\run-dotnet.ps1
-```
+### Vereisten
 
-```powershell
-.\scripts\run-docker.ps1
-```
-
-Stoppen:
-
-```powershell
-.\scripts\stop-dotnet.ps1
-```
-
-```powershell
-.\scripts\stop-docker.ps1
-```
-
-Deze scripts gebruiken de waarden uit .env (of maken die aan vanuit .env.example).
-Als een variant al draait, geven de run-scripts een herstartmelding en starten opnieuw op.
-
-## 1) Lokale .NET app (.NET 10)
-
-Monolithische variant. Draait lokaal in één app met SQLite.
+- [Hugo extended](https://gohugo.io/installation/) ≥ v0.159.2
+- [Go](https://go.dev/dl/) ≥ v1.24
 
 ### Starten
 
-```powershell
-.\scripts\run-dotnet.ps1
+```bash
+hugo server
 ```
 
-Tests:
+De site is beschikbaar op http://localhost:1313.
 
-```powershell
-dotnet test .\*.sln
+### Bouwen
+
+```bash
+hugo --gc --minify
 ```
 
-## 2) Docker app (containers)
+De statische output wordt geplaatst in `public/`.
 
-Containervariant. Draait met Docker Compose en PostgreSQL.
+---
 
-### Starten
+## Docker
 
-```powershell
-.\scripts\run-docker.ps1
+### Met Docker Compose
+
+```bash
+docker compose up -d
 ```
 
-## Wanneer gebruik je welke variant?
+De site is beschikbaar op http://localhost:8080.
 
-- Lokale .NET variant: snel opstarten en debuggen, geen Docker nodig, data in SQLite.
-- Docker variant: test de containersetup zoals die ook in de cloud draait, data in PostgreSQL.
+### Stoppen
 
-## Data en state
+```bash
+docker compose down
+```
 
-- SQLite (lokale .NET) en PostgreSQL (Docker) delen niet automatisch dezelfde data/state.
-- Bij wisselen van modus start je dus met de state van de bijbehorende database.
+### Direct bouwen en starten
 
-## Demo
+```bash
+docker build -t cloudshirt-hugo .
+docker run -p 8080:80 cloudshirt-hugo
+```
 
-![Demo screenshot](demo.avif)
+---
 
-<video src="Short-Demo.webm" controls playsinline width="100%"></video>
+## Technische stack
 
-[Bekijk demo (WebM)](Short-Demo.webm)
+| Onderdeel | Versie |
+|---|---|
+| Hugo (extended) | v0.159.2 |
+| Hextra theme | v0.12.1 |
+| nginx | alpine (latest) |
+
+---
 
 ## Credits
 
+- Originele CloudShirt: https://github.com/Stensel8/CloudShirt
 - Originele upstream: https://github.com/dotnet-architecture/eShopOnWeb
-- Fork-basis voor deze variant: https://github.com/looking4ward/CloudShirt
+- Hugo: https://gohugo.io/
+- Hextra: https://imfing.github.io/hextra
