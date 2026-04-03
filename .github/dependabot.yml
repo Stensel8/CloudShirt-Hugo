@@ -15,11 +15,3 @@ updates:
     rebase-strategy: "auto"
     commit-message:
       prefix: "ci(actions):"
-
-  - package-ecosystem: "docker"
-    directory: "/"
-    schedule:
-      interval: "weekly"
-    rebase-strategy: "auto"
-    commit-message:
-      prefix: "chore(docker):"
