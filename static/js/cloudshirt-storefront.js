@@ -599,7 +599,9 @@
     const pageInfo = root.querySelector("[data-page-info]");
     const orderRows = root.querySelector("[data-order-rows]");
     const adminProductsRoot = root.querySelector("[data-admin-products]");
-    const isAdminView = String(root.dataset.cloudshirtView || "").toLowerCase() === "admin";
+    const currentView = String(root.dataset.cloudshirtView || "").toLowerCase();
+    const isAdminView = currentView === "admin";
+    const isOrdersView = currentView === "orders";
     const authStatus = root.querySelector("[data-auth-status]");
     const apiBlocker = root.querySelector("[data-api-blocker]");
     let state = { brand: "all", type: "all", query: "", sort: "featured", page: 1, pageSize: 10 };
@@ -931,6 +933,10 @@
 
     // Load orders per context: admin gets all orders, users only their own orders.
     async function refreshOrders() {
+      if (!isAdminView && !isOrdersView) {
+        return;
+      }
+
       try {
         let loadedOrders = [];
         if (isAdminView) {
