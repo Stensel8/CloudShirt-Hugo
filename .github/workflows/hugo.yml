@@ -15,7 +15,7 @@ jobs:
     name: Hugo Build
     runs-on: ubuntu-latest
     env:
-      HUGO_VERSION: 0.159.2
+      HUGO_VERSION: 0.159.1
 
     steps:
       - name: Checkout
