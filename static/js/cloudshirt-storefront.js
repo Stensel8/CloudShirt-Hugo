@@ -128,10 +128,6 @@
     return Boolean(error) && (error.status === 401 || error.status === 403);
   }
 
-  function isForbiddenError(error) {
-    return Boolean(error) && error.status === 403;
-  }
-
   async function loadAuthMe() {
     const payload = await fetchJSON(`${apiBase}/auth/me`, {
       headers: getAuthHeaders(),
@@ -827,7 +823,7 @@
         let loadedOrders = [];
         if (isAdminView) {
           if (!authUser) {
-            showToast(root, "Log in als admin om het adminpaneel te gebruiken.", "info");
+            showToast(root, "Log in als admin om het admin-paneel te gebruiken.", "info");
             window.location.href = "/login/?returnTo=/admin/";
             return;
           }
@@ -840,7 +836,7 @@
       } catch (error) {
         if (isUnauthorizedError(error)) {
           if (isAdminView) {
-            showToast(root, isForbiddenError(error) ? "Geen toegang tot admin orders." : "Sessie verlopen. Log opnieuw in.", "error");
+            showToast(root, error && error.status === 403 ? "Geen toegang tot admin orders." : "Sessie verlopen. Log opnieuw in.", "error");
           } else {
             showToast(root, "Sessie verlopen. Log opnieuw in.", "error");
           }
