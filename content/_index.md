@@ -13,10 +13,10 @@ De site volgt de ervaring van [Stensel8/CloudShirt](https://github.com/Stensel8/
 
 | Onderdeel | Beschrijving |
 |---|---|
-| Productcatalogus | Bekijk CloudShirt-producten op type en merk |
-| Winkelwagen | Voeg producten toe en pas aantallen aan |
+| Productcatalogus | Originele CloudShirt-seedproducten met echte prijzen en afbeeldingen |
+| Winkelwagen | Voeg producten toe en ga door naar checkout |
 | Account | Inloggen en uitloggen |
-| Bestellingen | Rond orders af en bekijk orderhistorie |
+| Bestellingen | Plaats orders en bekijk orderhistorie |
 
 ---
 

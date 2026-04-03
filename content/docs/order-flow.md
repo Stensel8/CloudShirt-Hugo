@@ -14,9 +14,9 @@ CloudShirt-Hugo volgt dezelfde storefront-stroom als CloudShirt:
 
 ## Functionele parity-doelen
 
-- Product-first ervaring in plaats van assignment-first content
-- Duidelijk pad van catalogus naar bestelling
-- Documentatie afgestemd op CloudShirt webshopgedrag
+- Product-first ervaring met dezelfde data en assets als CloudShirt
+- Duidelijk pad van catalogus naar winkelwagen, checkout en orders
+- Pagina-opbouw afgestemd op CloudShirt webshopgedrag
 
 ## Gerelateerd
 

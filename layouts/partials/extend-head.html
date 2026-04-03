@@ -1,10 +1,6 @@
 <style>
   body {
-    background-color: #090d17;
-    background-image: url("/background.svg");
-    background-size: cover;
-    background-position: center;
-    background-attachment: fixed;
+    background-color: #020617;
     overflow-x: hidden;
   }
 
@@ -12,30 +8,28 @@
     content: "";
     position: fixed;
     inset: 0;
-    z-index: -1;
+    z-index: -2;
     pointer-events: none;
-    opacity: 0.14;
-    background: radial-gradient(circle at 20% 20%, rgba(255, 255, 255, 0.32) 0 1px, transparent 2px);
-    background-size: 180px 180px;
-    animation: cloudshirt-drift 30s linear infinite alternate;
+    background-image: url("/background.svg");
+    background-position: center top;
+    background-size: 1600px auto;
+    background-repeat: repeat;
+    opacity: 0.1;
+    filter: saturate(0.65) contrast(0.82);
   }
 
-  @keyframes cloudshirt-drift {
-    from {
-      transform: translate3d(0, 0, 0);
-    }
-    to {
-      transform: translate3d(-2%, -2%, 0);
-    }
+  body::after {
+    content: "";
+    position: fixed;
+    inset: 0;
+    z-index: -1;
+    pointer-events: none;
+    background:
+      linear-gradient(180deg, rgba(2, 6, 23, 0.5) 0%, rgba(2, 6, 23, 0.82) 48%, rgba(2, 6, 23, 0.92) 100%),
+      radial-gradient(1200px 700px at 50% -10%, rgba(56, 189, 248, 0.18), transparent 65%);
   }
 
   @media (prefers-reduced-motion: reduce) {
-    body {
-      background-attachment: scroll;
-    }
-
-    body::before {
-      animation: none;
-    }
+    *, *::before, *::after { animation: none !important; transition: none !important; }
   }
 </style>
