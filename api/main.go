@@ -749,7 +749,11 @@ func (a *app) handleOrdersBySession(w http.ResponseWriter, r *http.Request) {
 	writeJSON(w, http.StatusOK, map[string]any{"orders": orders})
 }
 
-func (a *app) loadOrders(ctx context.Context, whereClause string, args ...any) ([]order, error) {
+func (a *app) loadOrders(ctx context.Context, whereClause string, arg any) ([]order, error) {
+	return a.loadOrdersWithArgs(ctx, whereClause, arg)
+}
+
+func (a *app) loadOrdersWithArgs(ctx context.Context, whereClause string, args ...any) ([]order, error) {
 	query := `
 SELECT id, session_id, COALESCE(email, ''), status, total_amount::float8, created_at
 FROM orders

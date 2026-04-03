@@ -65,9 +65,6 @@
   }
 
   async function getOrdersBySession() {
-    if (authUser) {
-      return [];
-    }
     const payload = await fetchJSON(`${apiBase}/orders/${encodeURIComponent(sessionId)}`);
     return Array.isArray(payload.orders) ? payload.orders : [];
   }
