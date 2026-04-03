@@ -37,6 +37,15 @@ type updateBasketRequest struct {
 	Items []basketItem `json:"items"`
 }
 
+type adminUpdateProductRequest struct {
+	Name        string  `json:"name"`
+	Description string  `json:"description"`
+	Price       float64 `json:"price"`
+	Brand       string  `json:"brand"`
+	Type        string  `json:"type"`
+	Image       string  `json:"image"`
+}
+
 type createOrderRequest struct {
 	SessionID string `json:"sessionId"`
 	Email     string `json:"email"`

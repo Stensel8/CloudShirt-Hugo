@@ -582,6 +582,63 @@
     font-weight: 700;
   }
 
+  .cs-admin-products {
+    display: grid;
+    gap: .7rem;
+  }
+
+  .cs-admin-product {
+    border: 1px solid var(--cs-border);
+    border-radius: .95rem;
+    background: rgba(var(--color-neutral-900), 0.52);
+    padding: .85rem;
+    display: grid;
+    gap: .6rem;
+  }
+
+  .cs-admin-product__head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: .75rem;
+  }
+
+  .cs-admin-product__title {
+    margin: 0;
+    font-size: 1rem;
+    font-weight: 700;
+  }
+
+  .cs-admin-product__meta {
+    color: var(--cs-muted);
+    font-size: .85rem;
+  }
+
+  .cs-admin-product__fields {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    gap: .55rem;
+  }
+
+  .cs-admin-product__field {
+    display: grid;
+    gap: .25rem;
+  }
+
+  .cs-admin-product__field label {
+    color: var(--cs-muted);
+    font-size: .78rem;
+  }
+
+  .cs-admin-product__field input {
+    min-height: 2.2rem;
+    padding: .45rem .65rem;
+    border-radius: .72rem;
+    border: 1px solid var(--cs-border);
+    background: rgba(var(--color-neutral-950), 0.55);
+    color: var(--cs-text);
+  }
+
   .cs-is-hidden {
     display: none !important;
   }
@@ -799,11 +856,25 @@
     </section>
   {{ end }}
 
+  {{ if eq $view "admin" }}
+    <section class="cs-storefront__section">
+      <div class="cs-storefront__section-header">
+        <div>
+          <h2 class="cs-storefront__section-title">Artikelenbeheer</h2>
+          <div class="cs-storefront__section-meta">Werk productgegevens bij en sla direct op.</div>
+        </div>
+      </div>
+      <div class="cs-admin-products" data-admin-products>
+        <div class="cs-storefront__muted">Producten worden geladen...</div>
+      </div>
+    </section>
+  {{ end }}
+
   {{ if or (eq $view "orders") (eq $view "admin") }}
     <section class="cs-storefront__section">
       <div class="cs-storefront__section-header">
         <div>
-          <h2 class="cs-storefront__section-title">{{ if eq $view "admin" }}Admin orders{{ else }}Orders{{ end }}</h2>
+          <h2 class="cs-storefront__section-title">{{ if eq $view "admin" }}Orderbeheer{{ else }}Orders{{ end }}</h2>
           <div class="cs-storefront__section-meta">{{ if eq $view "admin" }}Overzicht van alle orders in het systeem.{{ else }}Klik op een order om de details uit te klappen.{{ end }}</div>
         </div>
       </div>

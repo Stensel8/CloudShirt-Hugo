@@ -7,8 +7,3 @@
   name = "Login"
   pageRef = "login"
   weight = 18
-
-[[main]]
-  name = "Account"
-  pageRef = "account"
-  weight = 19

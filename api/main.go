@@ -7,9 +7,9 @@ import (
 	"log"
 	"net/http"
 	"os"
+	"sort"
 	"strconv"
 	"strings"
-	"sync"
 	"time"
 
 	"github.com/jackc/pgx/v5/pgxpool"
@@ -68,6 +68,8 @@ func main() {
 	mux.HandleFunc("/api/orders/me", a.handleOrdersMe)
 	mux.HandleFunc("/api/orders/", a.handleOrdersBySession)
 	mux.HandleFunc("/api/admin/orders", a.handleAdminOrders)
+	mux.HandleFunc("/api/admin/products", a.handleAdminProducts)
+	mux.HandleFunc("/api/admin/products/", a.handleAdminProductByID)
 
 	handler := withJSON(withCORS(mux))
 	server := &http.Server{
@@ -125,96 +127,13 @@ func (a *app) handleCatalogItems(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	ctx := r.Context()
-
-	var (
-		items  []catalogItem
-		brands []string
-		types  []string
-	)
-
-	errCh := make(chan error, 3)
-	var wg sync.WaitGroup
-	wg.Add(3)
-
-	go func() {
-		defer wg.Done()
-		rows, err := a.db.Query(ctx, `
-SELECT id, name, description, price::float8, brand, type, image
-FROM products
-ORDER BY id;
-`)
-		if err != nil {
-			errCh <- err
-			return
-		}
-		defer rows.Close()
-
-		localItems := make([]catalogItem, 0)
-		for rows.Next() {
-			var item catalogItem
-			if err := rows.Scan(&item.ID, &item.Name, &item.Description, &item.Price, &item.Brand, &item.Type, &item.Image); err != nil {
-				errCh <- err
-				return
-			}
-			localItems = append(localItems, item)
-		}
-		items = localItems
-	}()
-
-	go func() {
-		defer wg.Done()
-		rows, err := a.db.Query(ctx, "SELECT DISTINCT brand FROM products ORDER BY brand")
-		if err != nil {
-			errCh <- err
-			return
-		}
-		defer rows.Close()
-
-		localBrands := make([]string, 0)
-		for rows.Next() {
-			var brand string
-			if err := rows.Scan(&brand); err != nil {
-				errCh <- err
-				return
-			}
-			localBrands = append(localBrands, brand)
-		}
-		brands = localBrands
-	}()
-
-	go func() {
-		defer wg.Done()
-		rows, err := a.db.Query(ctx, "SELECT DISTINCT type FROM products ORDER BY type")
-		if err != nil {
-			errCh <- err
-			return
-		}
-		defer rows.Close()
-
-		localTypes := make([]string, 0)
-		for rows.Next() {
-			var itemType string
-			if err := rows.Scan(&itemType); err != nil {
-				errCh <- err
-				return
-			}
-			localTypes = append(localTypes, itemType)
-		}
-		types = localTypes
-	}()
-
-	wg.Wait()
-	close(errCh)
-
-	for err := range errCh {
-		if err != nil {
-			http.Error(w, "failed to load catalog", http.StatusInternalServerError)
-			return
-		}
+	catalog, err := a.loadCatalogItems(r.Context())
+	if err != nil {
+		http.Error(w, "failed to load catalog", http.StatusInternalServerError)
+		return
 	}
 
-	writeJSON(w, http.StatusOK, catalogData{Brands: brands, Types: types, Items: items})
+	writeJSON(w, http.StatusOK, catalog)
 }
 
 func (a *app) handleRegister(w http.ResponseWriter, r *http.Request) {
@@ -785,6 +704,147 @@ func (a *app) handleAdminOrders(w http.ResponseWriter, r *http.Request) {
 	}
 
 	writeJSON(w, http.StatusOK, map[string]any{"orders": orders})
+}
+
+func (a *app) requireAdmin(r *http.Request) error {
+	authUser, _, err := a.requireAuthUser(r)
+	if err != nil {
+		return err
+	}
+
+	if strings.ToLower(strings.TrimSpace(authUser.Role)) != "admin" {
+		return errors.New("forbidden")
+	}
+
+	return nil
+}
+
+func (a *app) handleAdminProducts(w http.ResponseWriter, r *http.Request) {
+	if r.Method != http.MethodGet {
+		http.Error(w, "method not allowed", http.StatusMethodNotAllowed)
+		return
+	}
+
+	if err := a.requireAdmin(r); err != nil {
+		if err.Error() == "forbidden" {
+			http.Error(w, "forbidden", http.StatusForbidden)
+			return
+		}
+		http.Error(w, "unauthorized", http.StatusUnauthorized)
+		return
+	}
+
+	catalog, err := a.loadCatalogItems(r.Context())
+	if err != nil {
+		http.Error(w, "failed to load products", http.StatusInternalServerError)
+		return
+	}
+
+	writeJSON(w, http.StatusOK, map[string]any{"items": catalog.Items})
+}
+
+func (a *app) handleAdminProductByID(w http.ResponseWriter, r *http.Request) {
+	if r.Method != http.MethodPut {
+		http.Error(w, "method not allowed", http.StatusMethodNotAllowed)
+		return
+	}
+
+	if err := a.requireAdmin(r); err != nil {
+		if err.Error() == "forbidden" {
+			http.Error(w, "forbidden", http.StatusForbidden)
+			return
+		}
+		http.Error(w, "unauthorized", http.StatusUnauthorized)
+		return
+	}
+
+	productIDText := strings.TrimPrefix(r.URL.Path, "/api/admin/products/")
+	productID, parseErr := strconv.Atoi(strings.TrimSpace(productIDText))
+	if parseErr != nil || productID <= 0 {
+		http.Error(w, "invalid product id", http.StatusBadRequest)
+		return
+	}
+
+	payload, err := parseJSON[adminUpdateProductRequest](r.Body)
+	if err != nil {
+		http.Error(w, "invalid product payload", http.StatusBadRequest)
+		return
+	}
+
+	if strings.TrimSpace(payload.Name) == "" || strings.TrimSpace(payload.Brand) == "" || strings.TrimSpace(payload.Type) == "" || strings.TrimSpace(payload.Image) == "" || payload.Price <= 0 {
+		http.Error(w, "invalid product payload", http.StatusBadRequest)
+		return
+	}
+
+	result, err := a.db.Exec(r.Context(), `
+UPDATE products
+SET name = $2,
+	description = $3,
+	price = $4,
+	brand = $5,
+	type = $6,
+	image = $7,
+	updated_at = NOW()
+WHERE id = $1;
+`, productID, strings.TrimSpace(payload.Name), strings.TrimSpace(payload.Description), payload.Price, strings.TrimSpace(payload.Brand), strings.TrimSpace(payload.Type), strings.TrimSpace(payload.Image))
+	if err != nil {
+		http.Error(w, "failed to update product", http.StatusInternalServerError)
+		return
+	}
+
+	if result.RowsAffected() == 0 {
+		http.Error(w, "product not found", http.StatusNotFound)
+		return
+	}
+
+	writeJSON(w, http.StatusOK, map[string]any{
+		"id":          productID,
+		"name":        strings.TrimSpace(payload.Name),
+		"description": strings.TrimSpace(payload.Description),
+		"price":       payload.Price,
+		"brand":       strings.TrimSpace(payload.Brand),
+		"type":        strings.TrimSpace(payload.Type),
+		"image":       strings.TrimSpace(payload.Image),
+	})
+}
+
+func (a *app) loadCatalogItems(ctx context.Context) (catalogData, error) {
+	rows, err := a.db.Query(ctx, `
+SELECT id, name, description, price::float8, brand, type, image
+FROM products
+ORDER BY id;
+`)
+	if err != nil {
+		return catalogData{}, err
+	}
+	defer rows.Close()
+
+	items := make([]catalogItem, 0)
+	brandSet := make(map[string]struct{})
+	typeSet := make(map[string]struct{})
+	for rows.Next() {
+		var item catalogItem
+		if err := rows.Scan(&item.ID, &item.Name, &item.Description, &item.Price, &item.Brand, &item.Type, &item.Image); err != nil {
+			return catalogData{}, err
+		}
+		items = append(items, item)
+		brandSet[item.Brand] = struct{}{}
+		typeSet[item.Type] = struct{}{}
+	}
+
+	brands := make([]string, 0, len(brandSet))
+	for brand := range brandSet {
+		brands = append(brands, brand)
+	}
+	sort.Strings(brands)
+
+	types := make([]string, 0, len(typeSet))
+	for itemType := range typeSet {
+		types = append(types, itemType)
+	}
+	sort.Strings(types)
+
+	return catalogData{Brands: brands, Types: types, Items: items}, nil
 }
 
 func (a *app) loadOrders(ctx context.Context, whereClause string, arg any) ([]order, error) {

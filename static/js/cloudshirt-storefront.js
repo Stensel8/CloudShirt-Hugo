@@ -87,6 +87,21 @@
     return Array.isArray(payload.orders) ? payload.orders : [];
   }
 
+  async function getProductsForAdmin() {
+    const payload = await fetchJSON(`${apiBase}/admin/products`, {
+      headers: getAuthHeaders(),
+    });
+    return Array.isArray(payload.items) ? payload.items : [];
+  }
+
+  async function updateAdminProduct(productId, payload) {
+    return fetchJSON(`${apiBase}/admin/products/${encodeURIComponent(productId)}`, {
+      method: "PUT",
+      headers: getAuthHeaders(),
+      body: JSON.stringify(payload),
+    });
+  }
+
   async function login(email, password, sessionId) {
     return fetchJSON(`${apiBase}/auth/login`, {
       method: "POST",
@@ -220,7 +235,7 @@
   function syncCartBadges(quantity) {
     const badges = document.querySelectorAll("[data-nav-cart-badge]");
     badges.forEach((badge) => {
-      badge.textContent = String(quantity);
+      badge.textContent = quantity > 99 ? "99+" : String(quantity);
       badge.classList.toggle("cs-nav-cart__badge--empty", Number(quantity) <= 0);
     });
   }
@@ -273,6 +288,21 @@
           mobileBlock.remove();
         } else {
           link.remove();
+        }
+      });
+
+      const accountLinks = Array.from(nav.querySelectorAll("a[href]")).filter((node) => {
+        const path = getPathnameFromHref(node.getAttribute("href"));
+        return path.endsWith("/account");
+      });
+      accountLinks.forEach((link) => {
+        if (!link.closest("[data-nav-account-root]")) {
+          const block = link.closest(".px-2");
+          if (block) {
+            block.remove();
+          } else {
+            link.remove();
+          }
         }
       });
     });
@@ -638,6 +668,7 @@
     const pageNextButton = root.querySelector("[data-page-next]");
     const pageInfo = root.querySelector("[data-page-info]");
     const orderRows = root.querySelector("[data-order-rows]");
+    const adminProductsRoot = root.querySelector("[data-admin-products]");
     const isAdminView = String(root.dataset.cloudshirtView || "").toLowerCase() === "admin";
     const authStatus = root.querySelector("[data-auth-status]");
     const apiBlocker = root.querySelector("[data-api-blocker]");
@@ -698,9 +729,58 @@
 
       if (checkoutStatus) {
         checkoutStatus.textContent = isLoggedIn
-          ? `Ingelogd als ${authUser.displayName}. Afrekenen kan direct.`
+          ? `Ingelogd als ${authUser.displayName}. Je doorloopt eerst een bevestiging en betaalstap.`
           : "Log in om af te rekenen. Je winkelwagen blijft bewaard.";
       }
+    }
+
+    function renderAdminProducts(items) {
+      if (!adminProductsRoot) {
+        return;
+      }
+
+      if (!items.length) {
+        adminProductsRoot.innerHTML = '<div class="cs-storefront__muted">Geen producten gevonden.</div>';
+        return;
+      }
+
+      adminProductsRoot.innerHTML = items.map((item) => `
+        <article class="cs-admin-product" data-admin-product data-product-id="${item.id}">
+          <div class="cs-admin-product__head">
+            <h3 class="cs-admin-product__title">${escapeHtml(item.name)}</h3>
+            <div class="cs-admin-product__meta">#${item.id}</div>
+          </div>
+          <div class="cs-admin-product__fields">
+            <div class="cs-admin-product__field">
+              <label>Naam</label>
+              <input type="text" data-admin-field="name" value="${escapeHtml(item.name)}">
+            </div>
+            <div class="cs-admin-product__field">
+              <label>Prijs</label>
+              <input type="number" step="0.01" min="0.01" data-admin-field="price" value="${Number(item.price || 0).toFixed(2)}">
+            </div>
+            <div class="cs-admin-product__field">
+              <label>Merk</label>
+              <input type="text" data-admin-field="brand" value="${escapeHtml(item.brand)}">
+            </div>
+            <div class="cs-admin-product__field">
+              <label>Type</label>
+              <input type="text" data-admin-field="type" value="${escapeHtml(item.type)}">
+            </div>
+            <div class="cs-admin-product__field">
+              <label>Afbeelding</label>
+              <input type="text" data-admin-field="image" value="${escapeHtml(item.image)}">
+            </div>
+            <div class="cs-admin-product__field">
+              <label>Omschrijving</label>
+              <input type="text" data-admin-field="description" value="${escapeHtml(item.description || "")}">
+            </div>
+          </div>
+          <div class="cs-storefront__filters">
+            <button class="cs-button cs-button--accent" type="button" data-admin-save>Opslaan</button>
+          </div>
+        </article>
+      `).join("");
     }
 
     function setActiveButton(buttons, attributeName, value) {
@@ -845,6 +925,25 @@
           return;
         }
         showToast(root, "Orders laden mislukt", "error");
+      }
+    }
+
+    async function refreshAdminProducts() {
+      if (!isAdminView || !adminProductsRoot) {
+        return;
+      }
+
+      try {
+        const products = await getProductsForAdmin();
+        renderAdminProducts(products);
+      } catch (error) {
+        if (isUnauthorizedError(error)) {
+          showToast(root, "Geen toegang tot artikelbeheer.", "error");
+          await clearAuthSession();
+          syncNavbarAuthUI();
+          return;
+        }
+        showToast(root, "Producten laden mislukt.", "error");
       }
     }
 
@@ -1060,6 +1159,7 @@
       const brandButton = event.target.closest("[data-filter-brand]");
       const typeButton = event.target.closest("[data-filter-type]");
       const sortButton = event.target.closest("[data-sort]");
+      const adminSaveButton = event.target.closest("[data-admin-save]");
 
       if (addButton) {
         void syncCartItem({
@@ -1118,6 +1218,37 @@
         state.page = 1;
         setActiveButton(sortButtons, "sort", state.sort);
         applyFilters();
+        return;
+      }
+
+      if (adminSaveButton) {
+        const card = adminSaveButton.closest("[data-admin-product]");
+        if (!card) {
+          return;
+        }
+        const productId = Number(card.dataset.productId);
+        const payload = {
+          name: (card.querySelector('[data-admin-field="name"]') || {}).value || "",
+          description: (card.querySelector('[data-admin-field="description"]') || {}).value || "",
+          price: Number((card.querySelector('[data-admin-field="price"]') || {}).value || 0),
+          brand: (card.querySelector('[data-admin-field="brand"]') || {}).value || "",
+          type: (card.querySelector('[data-admin-field="type"]') || {}).value || "",
+          image: (card.querySelector('[data-admin-field="image"]') || {}).value || "",
+        };
+
+        adminSaveButton.disabled = true;
+        try {
+          await updateAdminProduct(productId, payload);
+          showToast(root, "Artikel opgeslagen.", "success");
+        } catch (error) {
+          if (isUnauthorizedError(error)) {
+            await clearAuthSession();
+            syncNavbarAuthUI();
+          }
+          showToast(root, "Opslaan mislukt.", "error");
+        } finally {
+          adminSaveButton.disabled = false;
+        }
       }
     });
 
@@ -1161,14 +1292,38 @@
           }
 
           button.disabled = true;
-          showToast(root, "Order wordt geplaatst...", "info");
+          const proceed = window.Swal
+            ? await window.Swal.fire({
+              title: "Bestelling bevestigen",
+              text: "Wil je doorgaan naar betalen?",
+              icon: "question",
+              showCancelButton: true,
+              confirmButtonText: "Ja, ga verder",
+              cancelButtonText: "Annuleren",
+            }).then((result) => Boolean(result.isConfirmed))
+            : window.confirm("Wil je doorgaan naar betalen?");
+          if (!proceed) {
+            button.disabled = false;
+            return;
+          }
+          showToast(root, "Betaalproces wordt gestart...", "info");
+          await new Promise((resolve) => setTimeout(resolve, 850));
           try {
             await placeOrder(authUser.email);
             cart.splice(0, cart.length);
             renderCart();
             await syncBasket();
             await refreshOrders();
-            showToast(root, "Order geplaatst", "success");
+            if (window.Swal) {
+              await window.Swal.fire({
+                title: "Bedankt voor je bestelling!",
+                text: "Je betaling is afgerond. Je bestelling staat nu bij je orders.",
+                icon: "success",
+                confirmButtonText: "Bekijk mijn orders",
+              });
+            } else {
+              showToast(root, "Bedankt voor je bestelling!", "success");
+            }
             window.location.href = "/orders/";
           } catch (error) {
             if (isUnauthorizedError(error)) {
@@ -1211,6 +1366,7 @@
         cart.splice(0, cart.length, ...remoteItems);
         renderCart();
 
+        await refreshAdminProducts();
         await refreshOrders();
         applyFilters();
       } catch (error) {
