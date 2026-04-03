@@ -1,24 +1,24 @@
 ---
-title: "Order flow"
-description: "CloudShirt ordering journey from basket to completed order."
+title: "Bestelstroom"
+description: "CloudShirt bestelpad van winkelwagen tot afgeronde order."
 weight: 30
 ---
 
-CloudShirt-Hugo mirrors the CloudShirt storefront flow:
+CloudShirt-Hugo volgt dezelfde storefront-stroom als CloudShirt:
 
-1. Browse products in the catalog
-2. Add one or more items to the basket
-3. Review and update basket quantities
-4. Complete checkout
-5. View placed orders in order history
+1. Producten bekijken in de catalogus
+2. Eén of meer items toevoegen aan de winkelwagen
+3. Aantallen controleren en aanpassen
+4. Checkout afronden
+5. Geplaatste orders bekijken in orderhistorie
 
-## Functional parity goals
+## Functionele parity-doelen
 
-- Product-first experience instead of assignment-first content
-- Clear path from catalog browsing to order placement
-- Documentation aligned with the CloudShirt webshop behavior
+- Product-first ervaring in plaats van assignment-first content
+- Duidelijk pad van catalogus naar bestelling
+- Documentatie afgestemd op CloudShirt webshopgedrag
 
-## Related
+## Gerelateerd
 
-- [Getting started](getting-started)
-- [Catalog and products](catalog)
+- [Aan de slag](getting-started)
+- [Catalogus en producten](catalog)

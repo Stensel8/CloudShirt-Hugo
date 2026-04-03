@@ -1,16 +1,16 @@
 # CloudShirt – Hugo Edition
 
-A lightweight Hugo companion for the CloudShirt webshop.
+Een lichte Hugo-variant van CloudShirt met winkelervaring.
 
-This is the Hugo variant of [CloudShirt](https://github.com/Stensel8/CloudShirt), built with [Hugo](https://gohugo.io/) and the [Blowfish](https://blowfish.page/) theme, and deployed via Docker (nginx).
+Dit is de Hugo-variant van [CloudShirt](https://github.com/Stensel8/CloudShirt), gebouwd met [Hugo](https://gohugo.io/) en het [Blowfish](https://blowfish.page/)-thema, gedeployed via Docker (nginx).
 
-It focuses on CloudShirt product catalog and ordering flow parity in a lighter, modern presentation.
+De focus ligt op functionele parity met CloudShirt: producten bekijken, winkelwagen gebruiken, inloggen/uitloggen en bestelstroom volgen.
 
 ---
 
 ## Lokale ontwikkeling
 
-**Vereisten:** Hugo extended ≥ v0.159.2 en Go ≥ v1.24.
+**Vereisten:** Hugo extended ≥ v0.159.2 en Go ≥ v1.26.
 
 ```bash
 hugo server        # development server

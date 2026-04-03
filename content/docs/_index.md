@@ -1,10 +1,11 @@
 ---
-title: "Documentation"
-description: "CloudShirt platform docs for setup, catalog, and ordering."
+title: "Documentatie"
+description: "CloudShirt-documentatie voor setup, winkelervaring, catalogus en bestellen."
 ---
 
-Welcome to the CloudShirt documentation.
+Welkom bij de CloudShirt-documentatie.
 
-- [Getting started](getting-started) – run CloudShirt-Hugo and CloudShirt locally
-- [Catalog and products](catalog) – product assortment, brands, and categories
-- [Order flow](order-flow) – basket to checkout and order history
+- [Aan de slag](getting-started) – draai CloudShirt-Hugo en CloudShirt lokaal
+- [Winkelervaring](storefront) – productscherm, account, winkelwagen en bestelknoppen
+- [Catalogus en producten](catalog) – assortiment, merken en categorieën
+- [Bestelstroom](order-flow) – van winkelwagen naar checkout en orderhistorie

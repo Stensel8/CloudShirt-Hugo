@@ -1,0 +1,95 @@
+{{ $products := slice
+  (dict "id" 13 "name" "Dad, What Are Clouds Made Of? T-Shirt" "brand" "Azure" "type" "T-Shirt" "price" "€18,50")
+  (dict "id" 14 "name" "Azure Certified T-Shirt" "brand" "Azure" "type" "T-Shirt" "price" "€17,00")
+  (dict "id" 18 "name" "Cloud Architect Hourly Rate T-Shirt" "brand" "Azure" "type" "T-Shirt" "price" "€18,50")
+  (dict "id" 19 "name" "SQL Server Database Administrator T-Shirt" "brand" "SQL Server" "type" "T-Shirt" "price" "€18,00")
+  (dict "id" 21 "name" "Huge Fan of Databases T-Shirt" "brand" "SQL Server" "type" "T-Shirt" "price" "€19,50")
+  (dict "id" 32 "name" "VS Code Logo T-Shirt" "brand" "Visual Studio" "type" "T-Shirt" "price" "€19,50")
+}}
+
+<style>
+  .cloudshirt-storefront {
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    border-radius: 1rem;
+    padding: 1rem;
+    background: rgba(0, 0, 0, 0.35);
+  }
+
+  .cloudshirt-storefront__bar {
+    display: flex;
+    flex-wrap: wrap;
+    gap: .5rem;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1rem;
+  }
+
+  .cloudshirt-storefront__actions {
+    display: flex;
+    gap: .5rem;
+  }
+
+  .cloudshirt-storefront__btn {
+    border: 1px solid rgba(255, 255, 255, 0.25);
+    border-radius: .6rem;
+    padding: .35rem .7rem;
+    font-size: .85rem;
+    background: rgba(255, 255, 255, 0.06);
+  }
+
+  .cloudshirt-storefront__grid {
+    display: grid;
+    gap: .75rem;
+    grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
+  }
+
+  .cloudshirt-storefront__item {
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    border-radius: .9rem;
+    padding: .75rem;
+    background: rgba(255, 255, 255, 0.04);
+    display: flex;
+    flex-direction: column;
+    gap: .45rem;
+  }
+
+  .cloudshirt-storefront__meta {
+    display: flex;
+    gap: .4rem;
+    flex-wrap: wrap;
+    font-size: .75rem;
+    opacity: .88;
+  }
+
+  .cloudshirt-storefront__price {
+    margin-top: auto;
+    font-weight: 700;
+  }
+</style>
+
+<section class="cloudshirt-storefront">
+  <div class="cloudshirt-storefront__bar">
+    <strong>CloudShirt Storefront</strong>
+    <div class="cloudshirt-storefront__actions">
+      <span class="cloudshirt-storefront__btn">Inloggen</span>
+      <span class="cloudshirt-storefront__btn">Uitloggen</span>
+      <span class="cloudshirt-storefront__btn">Winkelwagen (2)</span>
+      <span class="cloudshirt-storefront__btn">Bestellingen</span>
+    </div>
+  </div>
+
+  <div class="cloudshirt-storefront__grid">
+    {{ range $products }}
+      <article class="cloudshirt-storefront__item">
+        <strong>{{ .name }}</strong>
+        <div class="cloudshirt-storefront__meta">
+          <span>Merk: {{ .brand }}</span>
+          <span>Type: {{ .type }}</span>
+          <span>SKU: {{ .id }}</span>
+        </div>
+        <div class="cloudshirt-storefront__price">{{ .price }}</div>
+        <span class="cloudshirt-storefront__btn">Toevoegen aan winkelwagen</span>
+      </article>
+    {{ end }}
+  </div>
+</section>

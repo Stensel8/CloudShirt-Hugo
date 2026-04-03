@@ -1,29 +1,30 @@
 ---
 title: "CloudShirt"
-description: "Lightweight Hugo companion for the CloudShirt catalog and ordering platform."
+description: "Lichte Hugo-site met CloudShirt winkelervaring."
 ---
 
-CloudShirt-Hugo is the lightweight, modern documentation front-end for the **CloudShirt** webshop.
+CloudShirt-Hugo is een lichte, moderne Hugo-versie van de **CloudShirt** webshop.
 
-It mirrors the key experience from [Stensel8/CloudShirt](https://github.com/Stensel8/CloudShirt): products, basket, and order flow.
+De site volgt de ervaring van [Stensel8/CloudShirt](https://github.com/Stensel8/CloudShirt): producten, winkelwagen, account en bestellen.
 
 ---
 
-## Platform features
+## Functionaliteiten
 
-| Feature | Description |
+| Onderdeel | Beschrijving |
 |---|---|
-| Product catalog | Browse CloudShirt products by type and brand |
-| Basket | Add and update products before checkout |
-| Orders | Place orders and review order history |
-| Run modes | Local .NET mode and Docker mode |
+| Productcatalogus | Bekijk CloudShirt-producten op type en merk |
+| Winkelwagen | Voeg producten toe en pas aantallen aan |
+| Account | Inloggen en uitloggen |
+| Bestellingen | Rond orders af en bekijk orderhistorie |
 
 ---
 
-## Explore
+## Verkennen
 
-- [Getting started](docs/getting-started)
-- [Catalog and products](docs/catalog)
-- [Order flow](docs/order-flow)
+- [Aan de slag](docs/getting-started)
+- [Winkelervaring](docs/storefront)
+- [Catalogus en producten](docs/catalog)
+- [Bestelstroom](docs/order-flow)
 
 ![Demo screenshot](/demo.avif)

@@ -1,12 +1,12 @@
 ---
-title: "Catalog and products"
-description: "CloudShirt product catalog parity overview."
+title: "Catalogus en producten"
+description: "Overzicht van CloudShirt productcatalogus en parity."
 weight: 20
 ---
 
-CloudShirt provides a product catalog with the same core entities as the main application: **brands**, **types**, and **catalog items**.
+CloudShirt gebruikt dezelfde kernonderdelen als de hoofdapplicatie: **merken**, **types** en **catalogusitems**.
 
-## Brands
+## Merken
 
 - Azure
 - .NET
@@ -14,19 +14,19 @@ CloudShirt provides a product catalog with the same core entities as the main ap
 - SQL Server
 - Other
 
-## Product types
+## Producttypes
 
 - Mug
 - T-Shirt
 - Sheet
 
-## Product assortment
+## Productassortiment
 
-CloudShirt ships with a broad pre-seeded assortment, including:
+CloudShirt bevat een breed voorgeseed assortiment, waaronder:
 
-- .NET-themed shirts, mugs, and sheets
-- Azure and Microsoft Teams shirts
-- SQL and DBA shirts
-- Visual Studio and developer culture designs
+- .NET-shirts, mugs en sheets
+- Azure- en Microsoft Teams-shirts
+- SQL- en DBA-shirts
+- Visual Studio- en developer-culture ontwerpen
 
-The catalog content is seeded in the main app and represented by this Hugo site as product-focused documentation.
+De catalogusinhoud wordt in de hoofdapp ges seeded en is hier als productgerichte documentatie uitgewerkt.

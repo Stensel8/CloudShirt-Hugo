@@ -1,7 +1,12 @@
 [[main]]
-  name = "Docs"
+  name = "Documentatie"
   pageRef = "docs"
   weight = 10
+
+[[main]]
+  name = "Winkel"
+  pageRef = "docs/storefront"
+  weight = 15
 
 [[main]]
   name = "GitHub"
