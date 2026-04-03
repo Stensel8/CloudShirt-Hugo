@@ -20,6 +20,17 @@
     if (window.console && typeof window.console.error === "function") {
       window.console.error("CloudShirt API-module ontbreekt. Controleer of /js/cloudshirt-api.js geladen is.");
     }
+    const missingApiRoot = document.querySelector("[data-cloudshirt-storefront]");
+    if (missingApiRoot) {
+      let missingApiNotice = missingApiRoot.querySelector("[data-cloudshirt-api-missing]");
+      if (!missingApiNotice) {
+        missingApiNotice = document.createElement("p");
+        missingApiNotice.setAttribute("data-cloudshirt-api-missing", "1");
+        missingApiNotice.className = "cs-storefront__status cs-storefront__status--error";
+        missingApiRoot.prepend(missingApiNotice);
+      }
+      missingApiNotice.textContent = "Storefront kon niet starten: API-module ontbreekt. Vernieuw de pagina of neem contact op met support.";
+    }
     return;
   }
 
