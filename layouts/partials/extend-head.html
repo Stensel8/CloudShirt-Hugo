@@ -1,21 +1,38 @@
 <style>
+  html,
   body {
-    background-color: #020617;
+    width: 100%;
+    max-width: 100%;
+    margin: 0;
+  }
+
+  *,
+  *::before,
+  *::after {
+    box-sizing: border-box;
+  }
+
+  body {
     overflow-x: hidden;
+    background-color: #020617;
   }
 
   body::before {
     content: "";
     position: fixed;
-    inset: 0;
+    left: -16vw;
+    top: -14vh;
+    width: 132vw;
+    height: 132vh;
     z-index: -2;
     pointer-events: none;
     background-image: url("/background.svg");
-    background-position: center top;
-    background-size: 1600px auto;
-    background-repeat: repeat;
+    background-position: center;
+    background-size: cover;
+    background-repeat: no-repeat;
     opacity: 0.1;
-    filter: saturate(0.65) contrast(0.82);
+    transform: translate3d(0, 0, 0);
+    animation: csBackgroundDrift 90s linear infinite alternate;
   }
 
   body::after {
@@ -29,7 +46,152 @@
       radial-gradient(1200px 700px at 50% -10%, rgba(56, 189, 248, 0.18), transparent 65%);
   }
 
+  @keyframes csBackgroundDrift {
+    0% { transform: translate3d(-20px, -10px, 0); }
+    50% { transform: translate3d(0, 0, 0); }
+    100% { transform: translate3d(20px, 10px, 0); }
+  }
+
   @media (prefers-reduced-motion: reduce) {
     *, *::before, *::after { animation: none !important; transition: none !important; }
   }
+
+  .swal2-container {
+    z-index: 200 !important;
+  }
+
+  .cs-nav-account {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    line-height: 1;
+  }
+
+  .cs-nav-account--mobile {
+    display: block;
+  }
+
+  .cs-nav-account__login,
+  .cs-nav-account__toggle {
+    display: inline-flex;
+    align-items: center;
+    gap: .35rem;
+    border: 0;
+    border-radius: 0;
+    background: transparent;
+    color: inherit;
+    padding: .2rem;
+    font-size: 1rem;
+    font-weight: 700;
+    letter-spacing: .04em;
+    line-height: 1;
+    text-decoration: none;
+    text-transform: uppercase;
+    cursor: pointer;
+  }
+
+  .cs-nav-account__login:hover,
+  .cs-nav-account__toggle:hover {
+    color: #75b918;
+  }
+
+  .cs-nav-account__caret {
+    font-size: .9rem;
+    opacity: .9;
+    color: #75b918;
+  }
+
+  .cs-nav-account__menu {
+    position: absolute;
+    top: calc(100% + .48rem);
+    right: 0;
+    min-width: 210px;
+    border: 1px solid #eeeeee;
+    border-radius: 0;
+    background: #ffffff;
+    box-shadow: 0 8px 24px rgba(15, 23, 42, 0.16);
+    padding: .35rem;
+    z-index: 45;
+  }
+
+  .cs-nav-account--mobile .cs-nav-account__menu {
+    position: static;
+    margin-top: .6rem;
+    min-width: 0;
+  }
+
+  .cs-nav-account__item {
+    display: block;
+    width: 100%;
+    border: 0;
+    border-radius: 0;
+    background: transparent;
+    color: #000000;
+    padding: .72rem .92rem;
+    text-align: left;
+    text-decoration: none;
+    font: inherit;
+    font-weight: 700;
+    letter-spacing: .02em;
+    text-transform: uppercase;
+    cursor: pointer;
+  }
+
+  .cs-nav-account__item:hover {
+    background: #f5f5f5;
+    color: #75b918;
+  }
+
+  .cs-nav-cart {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 2.6rem;
+    height: 2.6rem;
+    text-decoration: none;
+    color: inherit;
+  }
+
+  .cs-nav-cart__icon {
+    font-size: 1.58rem;
+    line-height: 1;
+  }
+
+  .cs-nav-cart--bump .cs-nav-cart__icon {
+    animation: csCartBump .38s ease;
+  }
+
+  .cs-nav-cart__badge {
+    position: absolute;
+    top: .08rem;
+    right: .12rem;
+    min-width: 1.22rem;
+    height: 1.22rem;
+    border-radius: 999px;
+    background: #83d01b;
+    color: #ffffff;
+    font-size: .75rem;
+    font-weight: 700;
+    display: grid;
+    place-items: center;
+    padding: 0 .25rem;
+  }
+
+  .cs-nav-cart__badge--empty {
+    opacity: .72;
+  }
+
+  @keyframes csCartBump {
+    0% { transform: scale(1); }
+    45% { transform: scale(1.22) rotate(-6deg); }
+    100% { transform: scale(1); }
+  }
+
+  .cs-nav-account__menu.cs-hidden,
+  .cs-nav-account__item.cs-hidden {
+    display: none;
+  }
 </style>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
+<script defer src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
