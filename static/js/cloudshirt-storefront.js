@@ -757,7 +757,7 @@
             </div>
             <div class="cs-admin-product__field">
               <label>Prijs</label>
-              <input type="number" step="0.01" min="0.01" data-admin-field="price" value="${Number(item.price || 0).toFixed(2)}">
+              <input type="number" step="0.01" min="0" data-admin-field="price" value="${Number(item.price || 0).toFixed(2)}">
             </div>
             <div class="cs-admin-product__field">
               <label>Merk</label>
