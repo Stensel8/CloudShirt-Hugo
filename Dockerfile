@@ -20,8 +20,9 @@ RUN go mod download
 # Copy the rest of the site
 COPY . .
 
-# Build the static site
-RUN hugo --gc --minify
+# Build the static site; override baseURL so assets resolve at "/" when served
+# by nginx (the config/hugo.toml baseURL targets GitHub Pages /CloudShirt-Hugo/).
+RUN hugo --gc --minify --baseURL /
 
 # Stage 2: Serve with nginx
 FROM nginx:1.29.7-alpine-slim
