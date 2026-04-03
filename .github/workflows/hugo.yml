@@ -19,14 +19,14 @@ jobs:
 
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
         with:
           fetch-depth: 0
 
       - name: Setup Go
-        uses: actions/setup-go@v5
+        uses: actions/setup-go@v6.4.0
         with:
-          go-version: "1.24"
+          go-version: "1.26"
 
       - name: Setup Hugo
         run: |
@@ -37,7 +37,7 @@ jobs:
           hugo version
 
       - name: Hugo module cache
-        uses: actions/cache@v4
+        uses: actions/cache@v5.0.4
         with:
           path: /root/.cache/hugo_cache
           key: ${{ runner.os }}-hugo-${{ hashFiles('**/go.sum') }}
@@ -54,7 +54,7 @@ jobs:
         run: hugo --gc --minify
 
       - name: Upload site artifact
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7.0.0
         with:
           name: cloudshirt-hugo-site
           path: ./public
@@ -66,7 +66,7 @@ jobs:
 
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
 
       - name: Trivy filesystem scan
         uses: aquasecurity/trivy-action@v0.35.0
