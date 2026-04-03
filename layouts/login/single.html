@@ -94,18 +94,18 @@
       }
     </style>
     <div class="login-container">
-      <p class="text-xs font-semibold uppercase tracking-[0.2em] text-primary-300">Login</p>
+      <p class="text-xs font-semibold uppercase tracking-[0.2em] text-primary-300">Inloggen</p>
       <h1 class="login-heading mt-2 text-neutral-50">Account</h1>
-      <p class="login-copy mt-3">Log in om je winkelwagen af te rekenen of direct orders te bekijken.</p>
+      <p class="login-copy mt-3">Log in om je winkelwagen af te rekenen of direct je orders te bekijken.</p>
 
       <form class="mt-6" data-login-form>
         <div class="login-form-row">
           <div class="login-field">
-            <label class="login-label" for="login-username">Email</label>
+            <label class="login-label" for="login-username">E-mailadres</label>
             <input id="login-username" class="login-input" type="email" autocomplete="username" data-login-email>
           </div>
           <div class="login-field">
-            <label class="login-label" for="login-password">Password</label>
+            <label class="login-label" for="login-password">Wachtwoord</label>
             <input id="login-password" class="login-input" type="password" autocomplete="current-password" data-login-password>
           </div>
         </div>
@@ -113,12 +113,12 @@
         <div class="login-actions">
           <label class="login-remember">
             <input type="checkbox" data-login-remember>
-            <span>Remember me</span>
+            <span>Onthoud mij</span>
           </label>
 
           <div class="flex gap-2">
-            <button class="cs-button cs-button--accent" type="submit" data-login-submit>Log in</button>
-            <a class="cs-button" href="/">Terug naar shop</a>
+            <button class="cs-button cs-button--accent" type="submit" data-login-submit>Inloggen</button>
+            <a class="cs-button" href="/">Terug naar winkel</a>
           </div>
         </div>
 
@@ -126,8 +126,8 @@
       </form>
 
       <div class="login-demo text-sm">
-        <p class="login-demo-item"><strong>Demo user:</strong> demouser@microsoft.com / Pass@word1</p>
-        <p class="login-demo-item"><strong>Admin user:</strong> admin@microsoft.com / Pass@word1</p>
+        <p class="login-demo-item"><strong>Demo-gebruiker:</strong> demouser@microsoft.com / Pass@word1</p>
+        <p class="login-demo-item"><strong>Admin-gebruiker:</strong> admin@microsoft.com / Pass@word1</p>
         <div class="login-demo-actions">
           <button class="cs-chip" type="button" data-login-fill="demo">Inloggen als demo (vul in)</button>
           <button class="cs-chip" type="button" data-login-fill="admin">Inloggen als admin (vul in)</button>
@@ -137,5 +137,6 @@
   </section>
 
   <script src="/js/cloudshirt-core.js" defer></script>
+  <script src="/js/cloudshirt-api.js" defer></script>
   <script src="/js/cloudshirt-storefront.js" defer></script>
 {{ end }}

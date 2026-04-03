@@ -57,7 +57,7 @@
 
       <div class="mt-5" data-account-guest hidden>
         <p class="account-copy">Je bent niet ingelogd. Log eerst in om je accountgegevens te bekijken.</p>
-        <a class="cs-button cs-button--accent mt-2 inline-flex" href="/login/?returnTo=/account/">Log in</a>
+        <a class="cs-button cs-button--accent mt-2 inline-flex" href="/login/?returnTo=/account/">Inloggen</a>
       </div>
 
       <div data-account-profile hidden>
@@ -67,7 +67,7 @@
             <span class="account-value" data-account-display-name>-</span>
           </div>
           <div class="account-card">
-            <span class="account-label">Email</span>
+            <span class="account-label">E-mailadres</span>
             <span class="account-value" data-account-email>-</span>
           </div>
           <div class="account-card">
@@ -92,12 +92,13 @@
           <a class="cs-button" href="/orders/">Naar orders</a>
           <a class="cs-button" href="/admin/" data-account-admin hidden>Naar admin</a>
           <a class="cs-button" href="/cart/">Naar winkelwagen</a>
-          <button class="cs-button cs-button--accent" type="button" data-account-logout>Log out</button>
+          <button class="cs-button cs-button--accent" type="button" data-account-logout>Uitloggen</button>
         </div>
       </div>
     </div>
   </section>
 
   <script src="/js/cloudshirt-core.js" defer></script>
+  <script src="/js/cloudshirt-api.js" defer></script>
   <script src="/js/cloudshirt-storefront.js" defer></script>
 {{ end }}

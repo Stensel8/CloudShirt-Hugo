@@ -15,107 +15,32 @@
   let authToken = "";
   let authUser = null;
 
-  function getAuthHeaders() {
-    const headers = { "Content-Type": "application/json" };
-    if (authToken) {
-      headers.Authorization = `Bearer ${authToken}`;
-    }
-    return headers;
+  const apiFactory = window.cloudshirtApiFactory;
+  if (!apiFactory || typeof apiFactory.create !== "function") {
+    return;
   }
 
-  async function fetchJSON(url, options) {
-    const response = await fetch(url, options);
-    if (!response.ok) {
-      const errorBody = (await response.text()).trim();
-      const error = new Error(errorBody || `request failed: ${response.status}`);
-      error.status = response.status;
-      error.body = errorBody;
-      throw error;
-    }
-    return response.json();
-  }
+  const api = apiFactory.create({
+    apiBase,
+    getAuthToken: () => authToken,
+    getSessionId: () => sessionId,
+    getCartItems: () => cart,
+  });
 
-  async function checkApiHealth() {
-    await fetchJSON(`${apiBase}/health`);
-  }
-
-  async function loadCatalog() {
-    return fetchJSON(`${apiBase}/catalog/items`);
-  }
-
-  async function loadRemoteBasket() {
-    const payload = await fetchJSON(`${apiBase}/basket/${encodeURIComponent(sessionId)}`);
-    return Array.isArray(payload.items) ? payload.items : [];
-  }
-
-  async function saveRemoteBasket() {
-    await fetchJSON(`${apiBase}/basket/${encodeURIComponent(sessionId)}`, {
-      method: "PUT",
-      headers: getAuthHeaders(),
-      body: JSON.stringify({ items: cart }),
-    });
-  }
-
-  async function placeOrder(email) {
-    return fetchJSON(`${apiBase}/orders`, {
-      method: "POST",
-      headers: getAuthHeaders(),
-      body: JSON.stringify({ sessionId, email }),
-    });
-  }
-
-  async function getOrdersBySession() {
-    const payload = await fetchJSON(`${apiBase}/orders/${encodeURIComponent(sessionId)}`);
-    return Array.isArray(payload.orders) ? payload.orders : [];
-  }
-
-  async function getOrdersForUser() {
-    const payload = await fetchJSON(`${apiBase}/orders/me`, {
-      headers: getAuthHeaders(),
-    });
-    return Array.isArray(payload.orders) ? payload.orders : [];
-  }
-
-  /**
-   * Fetch all orders for an authenticated admin account.
-   * This endpoint differs from getOrdersForUser(), which returns only personal orders.
-   */
-  async function getOrdersForAdmin() {
-    const payload = await fetchJSON(`${apiBase}/admin/orders`, {
-      headers: getAuthHeaders(),
-    });
-    return Array.isArray(payload.orders) ? payload.orders : [];
-  }
-
-  async function getProductsForAdmin() {
-    const payload = await fetchJSON(`${apiBase}/admin/products`, {
-      headers: getAuthHeaders(),
-    });
-    return Array.isArray(payload.items) ? payload.items : [];
-  }
-
-  async function updateAdminProduct(productId, payload) {
-    return fetchJSON(`${apiBase}/admin/products/${encodeURIComponent(productId)}`, {
-      method: "PUT",
-      headers: getAuthHeaders(),
-      body: JSON.stringify(payload),
-    });
-  }
-
-  async function login(email, password, sessionId) {
-    return fetchJSON(`${apiBase}/auth/login`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ email, password, sessionId }),
-    });
-  }
-
-  async function logout() {
-    await fetchJSON(`${apiBase}/auth/logout`, {
-      method: "POST",
-      headers: getAuthHeaders(),
-    });
-  }
+  const {
+    checkApiHealth,
+    loadCatalog,
+    loadRemoteBasket,
+    saveRemoteBasket,
+    placeOrder,
+    getOrdersForUser,
+    getOrdersForAdmin,
+    getProductsForAdmin,
+    updateAdminProduct,
+    login,
+    logout,
+    loadAuthMe,
+  } = api;
 
   function showToast(root, message, kind = "info") {
     const type = ["success", "error", "info"].includes(kind) ? kind : "info";
@@ -141,13 +66,6 @@
 
   function isUnauthorizedError(error) {
     return Boolean(error) && (error.status === 401 || error.status === 403);
-  }
-
-  async function loadAuthMe() {
-    const payload = await fetchJSON(`${apiBase}/auth/me`, {
-      headers: getAuthHeaders(),
-    });
-    return payload.user;
   }
 
   function normalizePathname(pathname) {
@@ -196,18 +114,18 @@
     wrapper.setAttribute("data-nav-account-root", "");
     const loginHref = links && links.login ? links.login : "/login/";
     const ordersHref = links && links.orders ? links.orders : "/orders/";
-    const accountHref = links && links.account ? links.account : "/account/";
+      const accountHref = links && links.account ? links.account : "/account/";
     wrapper.innerHTML = `
-      <a class="cs-nav-account__login" href="${loginHref}" data-nav-account-login-direct>LOGIN</a>
+      <a class="cs-nav-account__login" href="${loginHref}" data-nav-account-login-direct>INLOGGEN</a>
       <button class="cs-nav-account__toggle" type="button" data-nav-account-toggle aria-haspopup="menu" aria-expanded="false" hidden>
         <span data-nav-account-name>Account</span>
         <span class="cs-nav-account__caret" aria-hidden="true">▾</span>
       </button>
       <div class="cs-nav-account__menu" data-nav-account-menu hidden>
-        <a class="cs-nav-account__item" href="/admin/" data-nav-account-admin hidden>ADMIN</a>
-        <a class="cs-nav-account__item" href="${ordersHref}" data-nav-account-orders>MY ORDERS</a>
-        <a class="cs-nav-account__item" href="${accountHref}" data-nav-account-my-account>MY ACCOUNT</a>
-        <button class="cs-nav-account__item" type="button" data-nav-account-logout>LOG OUT</button>
+        <a class="cs-nav-account__item" href="/admin/" data-nav-account-admin hidden>BEHEER</a>
+        <a class="cs-nav-account__item" href="${ordersHref}" data-nav-account-orders>MIJN ORDERS</a>
+        <a class="cs-nav-account__item" href="${accountHref}" data-nav-account-my-account>MIJN ACCOUNT</a>
+        <button class="cs-nav-account__item" type="button" data-nav-account-logout>UITLOGGEN</button>
       </div>
     `;
     return wrapper;
@@ -997,7 +915,7 @@
       });
     }
 
-    // Load orders per context: admin gets all orders, users only their own/session orders.
+    // Load orders per context: admin gets all orders, users only their own orders.
     async function refreshOrders() {
       try {
         let loadedOrders = [];
@@ -1009,7 +927,12 @@
           }
           loadedOrders = await getOrdersForAdmin();
         } else {
-          loadedOrders = authUser ? await getOrdersForUser() : await getOrdersBySession();
+          if (!authUser) {
+            showToast(root, "Log in om je orders te bekijken.", "info");
+            window.location.href = "/login/?returnTo=/orders/";
+            return;
+          }
+          loadedOrders = await getOrdersForUser();
         }
         orders.splice(0, orders.length, ...loadedOrders);
         renderOrders(orders);

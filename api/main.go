@@ -655,6 +655,12 @@ func (a *app) handleOrdersBySession(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	_, _, err := a.requireAuthUser(r)
+	if err != nil {
+		http.Error(w, "unauthorized", http.StatusUnauthorized)
+		return
+	}
+
 	sessionID := strings.TrimPrefix(r.URL.Path, "/api/orders/")
 	if sessionID == "" {
 		http.Error(w, "missing session id", http.StatusBadRequest)
