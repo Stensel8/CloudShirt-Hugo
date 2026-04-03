@@ -114,7 +114,7 @@
     wrapper.setAttribute("data-nav-account-root", "");
     const loginHref = links && links.login ? links.login : "/login/";
     const ordersHref = links && links.orders ? links.orders : "/orders/";
-      const accountHref = links && links.account ? links.account : "/account/";
+    const accountHref = links && links.account ? links.account : "/account/";
     wrapper.innerHTML = `
       <a class="cs-nav-account__login" href="${loginHref}" data-nav-account-login-direct>INLOGGEN</a>
       <button class="cs-nav-account__toggle" type="button" data-nav-account-toggle aria-haspopup="menu" aria-expanded="false" hidden>
