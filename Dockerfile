@@ -15,7 +15,7 @@ WORKDIR /site
 
 # Copy go.mod/go.sum first to leverage layer caching
 COPY go.mod go.sum ./
-RUN hugo mod download
+RUN go mod download
 
 # Copy the rest of the site
 COPY . .
