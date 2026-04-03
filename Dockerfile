@@ -1,10 +1,11 @@
 # Stage 1: Build the Hugo site
-FROM golang:1.24-alpine AS builder
+FROM golang:1.24 AS builder
 
 ARG HUGO_VERSION=0.159.2
 
 # Install Hugo extended
-RUN apk add --no-cache wget gcc musl-dev git && \
+RUN apt-get update && apt-get install -y --no-install-recommends git wget && \
+    rm -rf /var/lib/apt/lists/* && \
     wget -qO /tmp/hugo.tar.gz \
       "https://github.com/gohugoio/hugo/releases/download/v${HUGO_VERSION}/hugo_extended_${HUGO_VERSION}_linux-amd64.tar.gz" && \
     tar -xzf /tmp/hugo.tar.gz -C /usr/local/bin hugo && \
