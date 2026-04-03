@@ -1,7 +1,7 @@
 # Stage 1: Build the Hugo site
 FROM golang:1.24 AS builder
 
-ARG HUGO_VERSION=0.159.1
+ARG HUGO_VERSION=0.159.2
 
 # Install Hugo extended
 RUN apt-get update && apt-get install -y --no-install-recommends git wget && \
