@@ -783,6 +783,14 @@
       `).join("");
     }
 
+    function getAdminFieldValue(card, fieldName, fallback = "") {
+      const node = card.querySelector(`[data-admin-field="${fieldName}"]`);
+      if (!node) {
+        return fallback;
+      }
+      return node.value || fallback;
+    }
+
     function setActiveButton(buttons, attributeName, value) {
       buttons.forEach((button) => {
         const isActive = button.dataset[attributeName] === value;
@@ -1228,12 +1236,12 @@
         }
         const productId = Number(card.dataset.productId);
         const payload = {
-          name: (card.querySelector('[data-admin-field="name"]') || {}).value || "",
-          description: (card.querySelector('[data-admin-field="description"]') || {}).value || "",
-          price: Number((card.querySelector('[data-admin-field="price"]') || {}).value || 0),
-          brand: (card.querySelector('[data-admin-field="brand"]') || {}).value || "",
-          type: (card.querySelector('[data-admin-field="type"]') || {}).value || "",
-          image: (card.querySelector('[data-admin-field="image"]') || {}).value || "",
+          name: getAdminFieldValue(card, "name", ""),
+          description: getAdminFieldValue(card, "description", ""),
+          price: Number(getAdminFieldValue(card, "price", "0")),
+          brand: getAdminFieldValue(card, "brand", ""),
+          type: getAdminFieldValue(card, "type", ""),
+          image: getAdminFieldValue(card, "image", ""),
         };
 
         adminSaveButton.disabled = true;
@@ -1279,11 +1287,12 @@
 
     if (checkoutButtons.length) {
       checkoutButtons.forEach((button) => {
-        button.addEventListener("click", async () => {
-          if (!cart.length) {
-            showToast(root, "Plaats eerst minimaal 1 product in je winkelwagen.", "info");
-            return;
-          }
+          button.addEventListener("click", async () => {
+            const hasSwal = Boolean(window.Swal);
+            if (!cart.length) {
+              showToast(root, "Plaats eerst minimaal 1 product in je winkelwagen.", "info");
+              return;
+            }
 
           if (!authUser) {
             showToast(root, "Log in om af te rekenen.", "info");
@@ -1291,9 +1300,9 @@
             return;
           }
 
-          button.disabled = true;
-          const proceed = window.Swal
-            ? await window.Swal.fire({
+            button.disabled = true;
+            const proceed = hasSwal
+              ? await window.Swal.fire({
               title: "Bestelling bevestigen",
               text: "Wil je doorgaan naar betalen?",
               icon: "question",
@@ -1301,31 +1310,31 @@
               confirmButtonText: "Ja, ga verder",
               cancelButtonText: "Annuleren",
             }).then((result) => Boolean(result.isConfirmed))
-            : window.confirm("Wil je doorgaan naar betalen?");
-          if (!proceed) {
-            button.disabled = false;
-            return;
-          }
-          showToast(root, "Betaalproces wordt gestart...", "info");
-          await new Promise((resolve) => setTimeout(resolve, 850));
-          try {
+              : window.confirm("Wil je doorgaan naar betalen?");
+            if (!proceed) {
+              button.disabled = false;
+              return;
+            }
+            showToast(root, "Betaalproces wordt gestart...", "info");
+            await new Promise((resolve) => setTimeout(resolve, 850));
+            try {
             await placeOrder(authUser.email);
             cart.splice(0, cart.length);
             renderCart();
             await syncBasket();
             await refreshOrders();
-            if (window.Swal) {
-              await window.Swal.fire({
-                title: "Bedankt voor je bestelling!",
-                text: "Je betaling is afgerond. Je bestelling staat nu bij je orders.",
-                icon: "success",
-                confirmButtonText: "Bekijk mijn orders",
-              });
-            } else {
-              showToast(root, "Bedankt voor je bestelling!", "success");
-            }
-            window.location.href = "/orders/";
-          } catch (error) {
+              if (hasSwal) {
+                await window.Swal.fire({
+                  title: "Bedankt voor je bestelling!",
+                  text: "Je betaling is afgerond. Je bestelling staat nu bij je orders.",
+                  icon: "success",
+                  confirmButtonText: "Bekijk mijn orders",
+                });
+              } else {
+                showToast(root, "Bedankt voor je bestelling!", "success");
+              }
+              window.location.href = "/orders/";
+            } catch (error) {
             if (isUnauthorizedError(error)) {
               await clearAuthSession();
               syncNavbarAuthUI();
