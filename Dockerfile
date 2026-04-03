@@ -24,7 +24,7 @@ COPY . .
 RUN hugo --gc --minify
 
 # Stage 2: Serve with nginx
-FROM nginx:alpine
+FROM nginx:1.29.7-alpine-slim
 
 COPY --from=builder /site/public /usr/share/nginx/html
 

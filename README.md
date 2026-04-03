@@ -30,4 +30,4 @@ docker compose down    # stoppen
 |---|---|
 | Hugo (extended) | v0.159.2 |
 | Blowfish theme | v2.101.0 |
-| nginx | alpine |
+| nginx | 1.29.7-alpine-slim |
