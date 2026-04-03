@@ -1,5 +1,5 @@
 # Stage 1: Build the Hugo site
-FROM golang:1.24 AS builder
+FROM golang:1.26 AS builder
 
 ARG HUGO_VERSION=0.159.2
 
