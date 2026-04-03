@@ -647,7 +647,7 @@
     styleCartLinks();
     bindNavbarAuthEvents();
 
-    // Gebruik dit voor blokkerende fouten waarbij de storefront niet meer bruikbaar is.
+    // Use this for blocking failures when the storefront cannot continue safely.
     function setFatalError(message) {
       if (apiBlocker) {
         apiBlocker.classList.remove("cs-hidden");
@@ -817,7 +817,7 @@
       });
     }
 
-    // Laad orders per context: admin ziet alle orders, users enkel eigen orders.
+    // Load orders per context: admin gets all orders, users only their own/session orders.
     async function refreshOrders() {
       try {
         let loadedOrders = [];

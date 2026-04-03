@@ -4,6 +4,7 @@ import (
 	"context"
 	"database/sql"
 	"errors"
+	"fmt"
 	"log"
 	"net/http"
 	"os"
@@ -767,7 +768,18 @@ func (a *app) handleAdminOrders(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	orders, err := a.loadOrdersWithArgs(r.Context(), "WHERE 1=1")
+	limit := 100
+	queryLimit := strings.TrimSpace(r.URL.Query().Get("limit"))
+	if queryLimit != "" {
+		var parsed int
+		if _, parseErr := fmt.Sscanf(queryLimit, "%d", &parsed); parseErr == nil {
+			if parsed > 0 && parsed <= 500 {
+				limit = parsed
+			}
+		}
+	}
+
+	orders, err := a.loadOrdersWithArgs(r.Context(), fmt.Sprintf("WHERE 1=1 LIMIT %d", limit))
 	if err != nil {
 		http.Error(w, "failed to load admin orders", http.StatusInternalServerError)
 		return
