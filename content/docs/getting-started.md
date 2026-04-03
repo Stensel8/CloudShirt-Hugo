@@ -1,31 +1,31 @@
 ---
-title: "Aan de slag"
-description: "Hoe je de Hugo-site lokaal ontwikkelt en de CloudShirt-app draait."
+title: "Getting started"
+description: "Run the CloudShirt-Hugo companion site and the CloudShirt app."
 weight: 10
 ---
 
-> De broncode van de CloudShirt-applicatie staat in [Stensel8/CloudShirt](https://github.com/Stensel8/CloudShirt).
+The CloudShirt application source is available at [Stensel8/CloudShirt](https://github.com/Stensel8/CloudShirt).
 
-## Hugo-site lokaal draaien
+## Run this Hugo site locally
 
-**Vereisten:** [Hugo extended](https://gohugo.io/installation/) ≥ v0.159.2 en [Go](https://go.dev/dl/) ≥ v1.24.
+**Requirements:** [Hugo extended](https://gohugo.io/installation/) ≥ v0.159.2 and [Go](https://go.dev/dl/) ≥ v1.24.
 
 ```bash
 # Development server
 hugo server
 
-# Productie-build
+# Production build
 hugo --gc --minify
 ```
 
-## CloudShirt-applicatie draaien
+## Run the CloudShirt application
 
 ```bash
 git clone https://github.com/Stensel8/CloudShirt.git
 cd CloudShirt
 ```
 
-### Lokale .NET-variant (SQLite)
+### Local .NET mode (SQLite)
 
 ```powershell
 .\scripts\run-dotnet.ps1
@@ -34,13 +34,13 @@ cd CloudShirt
 dotnet test .\*.sln
 ```
 
-### Docker-variant (PostgreSQL)
+### Docker mode (PostgreSQL)
 
 ```powershell
 .\scripts\run-docker.ps1
 ```
 
-| Variant | Wanneer |
+| Mode | Recommended for |
 |---|---|
-| .NET lokaal | Snel debuggen, geen Docker nodig |
-| Docker | Test containersetup zoals in de cloud |
+| Local .NET | Fast debugging without containers |
+| Docker | Validating cloud-like container setup |

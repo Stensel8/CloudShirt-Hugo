@@ -1,26 +1,29 @@
 ---
 title: "CloudShirt"
-description: "Documentatiesite voor Cloud Engineering-opdrachten."
+description: "Lightweight Hugo companion for the CloudShirt catalog and ordering platform."
 ---
 
-CloudShirt is een implementatierepository voor schoolopdrachten binnen de **Cloud Engineering**-specialisatie.
+CloudShirt-Hugo is the lightweight, modern documentation front-end for the **CloudShirt** webshop.
 
-Gebaseerd op een Saxion-docentenvariant en omgebouwd voor opdrachten in **Cloud Automation Concepts**.
-
-Gekoppelde module-repository: [cloud-engineering](https://github.com/Stensel8/cloud-engineering/tree/main/cloud-automation-concepts)
+It mirrors the key experience from [Stensel8/CloudShirt](https://github.com/Stensel8/CloudShirt): products, basket, and order flow.
 
 ---
 
-## Opdrachten
+## Platform features
 
-| Opdracht | Onderwerp |
+| Feature | Description |
 |---|---|
-| [Assignment 1](docs/assignments/assignment1) | AWS Basics |
-| [Assignment 2](docs/assignments/assignment2) | Docker in the Cloud |
-| [Assignment 3](docs/assignments/assignment3) | Cloud Orchestration |
+| Product catalog | Browse CloudShirt products by type and brand |
+| Basket | Add and update products before checkout |
+| Orders | Place orders and review order history |
+| Run modes | Local .NET mode and Docker mode |
 
 ---
 
-## Demo
+## Explore
+
+- [Getting started](docs/getting-started)
+- [Catalog and products](docs/catalog)
+- [Order flow](docs/order-flow)
 
 ![Demo screenshot](/demo.avif)

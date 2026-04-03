@@ -1,10 +1,10 @@
 # CloudShirt – Hugo Edition
 
-Een lichte Hugo-website voor schoolopdrachten binnen de Cloud Engineering-specialisatie.
+A lightweight Hugo companion for the CloudShirt webshop.
 
-Dit is de Hugo-variant van [CloudShirt](https://github.com/Stensel8/CloudShirt), gebouwd met [Hugo](https://gohugo.io/) en het [Blowfish](https://blowfish.page/)-thema. Gedeployed via Docker (nginx).
+This is the Hugo variant of [CloudShirt](https://github.com/Stensel8/CloudShirt), built with [Hugo](https://gohugo.io/) and the [Blowfish](https://blowfish.page/) theme, and deployed via Docker (nginx).
 
-Gekoppelde module-repository: [cloud-engineering](https://github.com/Stensel8/cloud-engineering/tree/main/cloud-automation-concepts)
+It focuses on CloudShirt product catalog and ordering flow parity in a lighter, modern presentation.
 
 ---
 
