@@ -771,7 +771,13 @@ func (a *app) handleAdminProductByID(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	if strings.TrimSpace(payload.Name) == "" || strings.TrimSpace(payload.Brand) == "" || strings.TrimSpace(payload.Type) == "" || strings.TrimSpace(payload.Image) == "" || payload.Price <= 0 {
+	cleanName := strings.TrimSpace(payload.Name)
+	cleanDescription := strings.TrimSpace(payload.Description)
+	cleanBrand := strings.TrimSpace(payload.Brand)
+	cleanType := strings.TrimSpace(payload.Type)
+	cleanImage := strings.TrimSpace(payload.Image)
+
+	if cleanName == "" || cleanBrand == "" || cleanType == "" || cleanImage == "" || payload.Price <= 0 {
 		http.Error(w, "invalid product payload", http.StatusBadRequest)
 		return
 	}
@@ -786,7 +792,7 @@ SET name = $2,
 	image = $7,
 	updated_at = NOW()
 WHERE id = $1;
-`, productID, strings.TrimSpace(payload.Name), strings.TrimSpace(payload.Description), payload.Price, strings.TrimSpace(payload.Brand), strings.TrimSpace(payload.Type), strings.TrimSpace(payload.Image))
+`, productID, cleanName, cleanDescription, payload.Price, cleanBrand, cleanType, cleanImage)
 	if err != nil {
 		http.Error(w, "failed to update product", http.StatusInternalServerError)
 		return
@@ -799,12 +805,12 @@ WHERE id = $1;
 
 	writeJSON(w, http.StatusOK, map[string]any{
 		"id":          productID,
-		"name":        strings.TrimSpace(payload.Name),
-		"description": strings.TrimSpace(payload.Description),
+		"name":        cleanName,
+		"description": cleanDescription,
 		"price":       payload.Price,
-		"brand":       strings.TrimSpace(payload.Brand),
-		"type":        strings.TrimSpace(payload.Type),
-		"image":       strings.TrimSpace(payload.Image),
+		"brand":       cleanBrand,
+		"type":        cleanType,
+		"image":       cleanImage,
 	})
 }
 

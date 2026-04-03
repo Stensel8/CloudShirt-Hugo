@@ -1309,7 +1309,7 @@
               showCancelButton: true,
               confirmButtonText: "Ja, ga verder",
               cancelButtonText: "Annuleren",
-            }).then((result) => Boolean(result.isConfirmed))
+            }).then((result) => result.isConfirmed)
               : window.confirm("Wil je doorgaan naar betalen?");
             if (!proceed) {
               button.disabled = false;
