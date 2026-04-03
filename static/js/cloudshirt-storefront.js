@@ -550,11 +550,9 @@
 
         if (statusNode) {
           statusNode.textContent = button.dataset.loginFill === "admin"
-            ? "Admin-account geladen. Je wordt nu ingelogd."
-            : "Demo-account geladen. Je wordt nu ingelogd.";
+            ? "Admin-account ingevuld. Klik op Log in om door te gaan."
+            : "Demo-account ingevuld. Klik op Log in om door te gaan.";
         }
-
-        void performLogin(preset.email, preset.password);
       });
     });
   }
@@ -789,6 +787,100 @@
         return fallback;
       }
       return node.value || fallback;
+    }
+
+    function buildAdminProductPayload(card) {
+      return {
+        name: getAdminFieldValue(card, "name", ""),
+        description: getAdminFieldValue(card, "description", ""),
+        price: Number(getAdminFieldValue(card, "price", "0")),
+        brand: getAdminFieldValue(card, "brand", ""),
+        type: getAdminFieldValue(card, "type", ""),
+        image: getAdminFieldValue(card, "image", ""),
+      };
+    }
+
+    async function handleAdminProductSave(button) {
+      const card = button.closest("[data-admin-product]");
+      if (!card) {
+        return;
+      }
+
+      const productId = Number(card.dataset.productId);
+      const payload = buildAdminProductPayload(card);
+
+      button.disabled = true;
+      try {
+        await updateAdminProduct(productId, payload);
+        showToast(root, "Artikel opgeslagen.", "success");
+      } catch (error) {
+        if (isUnauthorizedError(error)) {
+          await clearAuthSession();
+          syncNavbarAuthUI();
+        }
+        showToast(root, "Opslaan mislukt.", "error");
+      } finally {
+        button.disabled = false;
+      }
+    }
+
+    async function handleCheckout(button) {
+      const hasSwal = Boolean(window.Swal);
+      if (!cart.length) {
+        showToast(root, "Plaats eerst minimaal 1 product in je winkelwagen.", "info");
+        return;
+      }
+
+      if (!authUser) {
+        showToast(root, "Log in om af te rekenen.", "info");
+        window.location.href = "/login/?returnTo=/cart/";
+        return;
+      }
+
+      button.disabled = true;
+      const proceed = hasSwal
+        ? await window.Swal.fire({
+          title: "Bestelling bevestigen",
+          text: "Wil je doorgaan naar betalen?",
+          icon: "question",
+          showCancelButton: true,
+          confirmButtonText: "Ja, ga verder",
+          cancelButtonText: "Annuleren",
+        }).then((result) => result.isConfirmed)
+        : window.confirm("Wil je doorgaan naar betalen?");
+      if (!proceed) {
+        button.disabled = false;
+        return;
+      }
+
+      showToast(root, "Betaalproces wordt gestart...", "info");
+      await new Promise((resolve) => setTimeout(resolve, 850));
+      try {
+        await placeOrder(authUser.email);
+        cart.splice(0, cart.length);
+        renderCart();
+        await syncBasket();
+        await refreshOrders();
+        if (hasSwal) {
+          await window.Swal.fire({
+            title: "Bedankt voor je bestelling!",
+            text: "Je betaling is afgerond. Je bestelling staat nu bij je orders.",
+            icon: "success",
+            confirmButtonText: "Bekijk mijn orders",
+          });
+        } else {
+          showToast(root, "Bedankt voor je bestelling!", "success");
+        }
+        window.location.href = "/orders/";
+      } catch (error) {
+        if (isUnauthorizedError(error)) {
+          await clearAuthSession();
+          syncNavbarAuthUI();
+        }
+        showToast(root, "Order plaatsen mislukt. Probeer opnieuw.", "error");
+      } finally {
+        button.disabled = false;
+      }
     }
 
     function setActiveButton(buttons, attributeName, value) {
@@ -1230,33 +1322,7 @@
       }
 
       if (adminSaveButton) {
-        const card = adminSaveButton.closest("[data-admin-product]");
-        if (!card) {
-          return;
-        }
-        const productId = Number(card.dataset.productId);
-        const payload = {
-          name: getAdminFieldValue(card, "name", ""),
-          description: getAdminFieldValue(card, "description", ""),
-          price: Number(getAdminFieldValue(card, "price", "0")),
-          brand: getAdminFieldValue(card, "brand", ""),
-          type: getAdminFieldValue(card, "type", ""),
-          image: getAdminFieldValue(card, "image", ""),
-        };
-
-        adminSaveButton.disabled = true;
-        try {
-          await updateAdminProduct(productId, payload);
-          showToast(root, "Artikel opgeslagen.", "success");
-        } catch (error) {
-          if (isUnauthorizedError(error)) {
-            await clearAuthSession();
-            syncNavbarAuthUI();
-          }
-          showToast(root, "Opslaan mislukt.", "error");
-        } finally {
-          adminSaveButton.disabled = false;
-        }
+        void handleAdminProductSave(adminSaveButton);
       }
     });
 
@@ -1287,62 +1353,8 @@
 
     if (checkoutButtons.length) {
       checkoutButtons.forEach((button) => {
-          button.addEventListener("click", async () => {
-            const hasSwal = Boolean(window.Swal);
-            if (!cart.length) {
-              showToast(root, "Plaats eerst minimaal 1 product in je winkelwagen.", "info");
-              return;
-            }
-
-          if (!authUser) {
-            showToast(root, "Log in om af te rekenen.", "info");
-            window.location.href = "/login/?returnTo=/cart/";
-            return;
-          }
-
-            button.disabled = true;
-            const proceed = hasSwal
-              ? await window.Swal.fire({
-              title: "Bestelling bevestigen",
-              text: "Wil je doorgaan naar betalen?",
-              icon: "question",
-              showCancelButton: true,
-              confirmButtonText: "Ja, ga verder",
-              cancelButtonText: "Annuleren",
-            }).then((result) => result.isConfirmed)
-              : window.confirm("Wil je doorgaan naar betalen?");
-            if (!proceed) {
-              button.disabled = false;
-              return;
-            }
-            showToast(root, "Betaalproces wordt gestart...", "info");
-            await new Promise((resolve) => setTimeout(resolve, 850));
-            try {
-            await placeOrder(authUser.email);
-            cart.splice(0, cart.length);
-            renderCart();
-            await syncBasket();
-            await refreshOrders();
-              if (hasSwal) {
-                await window.Swal.fire({
-                  title: "Bedankt voor je bestelling!",
-                  text: "Je betaling is afgerond. Je bestelling staat nu bij je orders.",
-                  icon: "success",
-                  confirmButtonText: "Bekijk mijn orders",
-                });
-              } else {
-                showToast(root, "Bedankt voor je bestelling!", "success");
-              }
-              window.location.href = "/orders/";
-            } catch (error) {
-            if (isUnauthorizedError(error)) {
-              await clearAuthSession();
-              syncNavbarAuthUI();
-            }
-            showToast(root, "Order plaatsen mislukt. Probeer opnieuw.", "error");
-          } finally {
-            button.disabled = false;
-          }
+        button.addEventListener("click", () => {
+          void handleCheckout(button);
         });
       });
     }
