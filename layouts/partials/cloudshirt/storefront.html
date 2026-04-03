@@ -672,9 +672,9 @@
       <div class="cs-storefront__hero-panel">
         <div class="cs-storefront__hero-copy">
           <p class="cs-storefront__eyebrow">CloudShirt</p>
-          <h1 class="cs-storefront__title">{{ if eq $view "cart" }}Winkelwagen{{ else if eq $view "orders" }}Orders{{ else }}Shop{{ end }}</h1>
+          <h1 class="cs-storefront__title">{{ if eq $view "cart" }}Winkelwagen{{ else if eq $view "orders" }}Orders{{ else if eq $view "admin" }}Admin{{ else }}Shop{{ end }}</h1>
           <p class="cs-storefront__description">
-            {{ if eq $view "cart" }}Wijzig aantallen en plaats een order.{{ else if eq $view "orders" }}Bekijk je orderhistorie en details.{{ end }}
+            {{ if eq $view "cart" }}Wijzig aantallen en plaats een order.{{ else if eq $view "orders" }}Bekijk je orderhistorie en details.{{ else if eq $view "admin" }}Beheer en controleer alle geplaatste orders.{{ end }}
           </p>
         </div>
       </div>
@@ -799,12 +799,12 @@
     </section>
   {{ end }}
 
-  {{ if eq $view "orders" }}
+  {{ if or (eq $view "orders") (eq $view "admin") }}
     <section class="cs-storefront__section">
       <div class="cs-storefront__section-header">
         <div>
-          <h2 class="cs-storefront__section-title">Orders</h2>
-          <div class="cs-storefront__section-meta">Klik op een order om de details uit te klappen.</div>
+          <h2 class="cs-storefront__section-title">{{ if eq $view "admin" }}Admin orders{{ else }}Orders{{ end }}</h2>
+          <div class="cs-storefront__section-meta">{{ if eq $view "admin" }}Overzicht van alle orders in het systeem.{{ else }}Klik op een order om de details uit te klappen.{{ end }}</div>
         </div>
       </div>
 

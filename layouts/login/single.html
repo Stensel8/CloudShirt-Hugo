@@ -71,6 +71,17 @@
         gap: .35rem;
       }
 
+      .login-demo-item {
+        margin: 0;
+      }
+
+      .login-demo-actions {
+        margin-top: .45rem;
+        display: flex;
+        flex-wrap: wrap;
+        gap: .45rem;
+      }
+
       .login-demo strong {
         color: rgb(var(--color-neutral-100));
       }
@@ -115,8 +126,12 @@
       </form>
 
       <div class="login-demo text-sm">
-        <p><strong>Demo user:</strong> demouser@microsoft.com / Pass@word1</p>
-        <p><strong>Admin user:</strong> admin@microsoft.com / Pass@word1</p>
+        <p class="login-demo-item"><strong>Demo user:</strong> demouser@microsoft.com / Pass@word1</p>
+        <p class="login-demo-item"><strong>Admin user:</strong> admin@microsoft.com / Pass@word1</p>
+        <div class="login-demo-actions">
+          <button class="cs-chip" type="button" data-login-fill="demo">Gebruik demo account</button>
+          <button class="cs-chip" type="button" data-login-fill="admin">Gebruik admin account</button>
+        </div>
       </div>
     </div>
   </section>

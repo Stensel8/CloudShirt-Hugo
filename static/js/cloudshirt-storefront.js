@@ -76,6 +76,13 @@
     return Array.isArray(payload.orders) ? payload.orders : [];
   }
 
+  async function getOrdersForAdmin() {
+    const payload = await fetchJSON(`${apiBase}/admin/orders`, {
+      headers: getAuthHeaders(),
+    });
+    return Array.isArray(payload.orders) ? payload.orders : [];
+  }
+
   async function login(email, password, sessionId) {
     return fetchJSON(`${apiBase}/auth/login`, {
       method: "POST",
@@ -111,6 +118,14 @@
     }
 
     window.alert(message);
+  }
+
+  function isUnauthorizedError(error) {
+    return Boolean(error) && (error.status === 401 || error.status === 403);
+  }
+
+  function isAuthExpiredError(error) {
+    return Boolean(error) && error.status === 401;
   }
 
   async function loadAuthMe() {
@@ -174,7 +189,7 @@
         <span class="cs-nav-account__caret" aria-hidden="true">▾</span>
       </button>
       <div class="cs-nav-account__menu" data-nav-account-menu hidden>
-        <a class="cs-nav-account__item" href="${ordersHref}" data-nav-account-admin hidden>ADMIN</a>
+        <a class="cs-nav-account__item" href="/admin/" data-nav-account-admin hidden>ADMIN</a>
         <a class="cs-nav-account__item" href="${ordersHref}" data-nav-account-orders>MY ORDERS</a>
         <a class="cs-nav-account__item" href="${accountHref}" data-nav-account-my-account>MY ACCOUNT</a>
         <button class="cs-nav-account__item" type="button" data-nav-account-logout>LOG OUT</button>
@@ -536,6 +551,7 @@
       const emailNode = accountPage.querySelector("[data-account-email]");
       const roleNode = accountPage.querySelector("[data-account-role]");
       const createdNode = accountPage.querySelector("[data-account-created]");
+      const adminNodes = accountPage.querySelectorAll("[data-account-admin]");
       const logoutButton = accountPage.querySelector("[data-account-logout]");
 
       if (!authUser) {
@@ -570,6 +586,11 @@
           ? created.toLocaleDateString("nl-NL")
           : "Onbekend";
       }
+
+      const isAdmin = String(authUser.role || "").toLowerCase() === "admin";
+      adminNodes.forEach((node) => {
+        node.hidden = !isAdmin;
+      });
 
       if (ordersNode) {
         try {
@@ -617,6 +638,7 @@
     const pageNextButton = root.querySelector("[data-page-next]");
     const pageInfo = root.querySelector("[data-page-info]");
     const orderRows = root.querySelector("[data-order-rows]");
+    const isAdminView = String(root.dataset.cloudshirtView || "").toLowerCase() === "admin";
     const authStatus = root.querySelector("[data-auth-status]");
     const apiBlocker = root.querySelector("[data-api-blocker]");
     let state = { brand: "all", type: "all", query: "", sort: "featured", page: 1, pageSize: 10 };
@@ -625,6 +647,7 @@
     styleCartLinks();
     bindNavbarAuthEvents();
 
+    // Gebruik dit voor blokkerende fouten waarbij de storefront niet meer bruikbaar is.
     function setFatalError(message) {
       if (apiBlocker) {
         apiBlocker.classList.remove("cs-hidden");
@@ -794,12 +817,33 @@
       });
     }
 
+    // Laad orders per context: admin ziet alle orders, users enkel eigen orders.
     async function refreshOrders() {
       try {
-        const loadedOrders = authUser ? await getOrdersForUser() : await getOrdersBySession();
+        let loadedOrders = [];
+        if (isAdminView) {
+          if (!authUser) {
+            showToast(root, "Log in als admin om het admin-paneel te gebruiken.", "info");
+            window.location.href = "/login/?returnTo=/admin/";
+            return;
+          }
+          loadedOrders = await getOrdersForAdmin();
+        } else {
+          loadedOrders = authUser ? await getOrdersForUser() : await getOrdersBySession();
+        }
         orders.splice(0, orders.length, ...loadedOrders);
         renderOrders(orders);
       } catch (error) {
+        if (isUnauthorizedError(error)) {
+          if (isAdminView) {
+            showToast(root, "Geen toegang tot admin orders.", "error");
+          } else {
+            showToast(root, "Sessie verlopen. Log opnieuw in.", "error");
+          }
+          await clearAuthSession();
+          syncNavbarAuthUI();
+          return;
+        }
         showToast(root, "Orders laden mislukt", "error");
       }
     }
@@ -902,6 +946,10 @@
         await syncBasket();
         showToast(root, `${product.name} toegevoegd aan winkelwagen`, "success");
       } catch (error) {
+        if (isAuthExpiredError(error)) {
+          await clearAuthSession();
+          syncNavbarAuthUI();
+        }
         showToast(root, "Product lokaal toegevoegd, maar sync met server faalde.", "error");
       }
     }
@@ -926,6 +974,10 @@
         await syncBasket();
         showToast(root, "Winkelwagen bijgewerkt", "info");
       } catch (error) {
+        if (isAuthExpiredError(error)) {
+          await clearAuthSession();
+          syncNavbarAuthUI();
+        }
         showToast(root, "Aanpassing gelukt, maar sync met server faalde.", "error");
       }
     }
@@ -1119,6 +1171,10 @@
             showToast(root, "Order geplaatst", "success");
             window.location.href = "/orders/";
           } catch (error) {
+            if (isAuthExpiredError(error)) {
+              await clearAuthSession();
+              syncNavbarAuthUI();
+            }
             showToast(root, "Order plaatsen mislukt. Probeer opnieuw.", "error");
           } finally {
             button.disabled = false;
@@ -1158,6 +1214,10 @@
         await refreshOrders();
         applyFilters();
       } catch (error) {
+        if (isUnauthorizedError(error)) {
+          setFatalError("Je sessie is verlopen of ongeldig. Log opnieuw in.");
+          return;
+        }
         setFatalError("De API is niet bereikbaar, daarom kan de web storefront niet laden.");
       }
     })();

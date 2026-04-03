@@ -66,6 +66,7 @@ func main() {
 	mux.HandleFunc("/api/orders", a.handleCreateOrder)
 	mux.HandleFunc("/api/orders/me", a.handleOrdersMe)
 	mux.HandleFunc("/api/orders/", a.handleOrdersBySession)
+	mux.HandleFunc("/api/admin/orders", a.handleAdminOrders)
 
 	handler := withJSON(withCORS(mux))
 	server := &http.Server{
@@ -743,6 +744,32 @@ func (a *app) handleOrdersBySession(w http.ResponseWriter, r *http.Request) {
 	orders, err := a.loadOrders(r.Context(), "WHERE session_id = $1", sessionID)
 	if err != nil {
 		http.Error(w, "failed to load orders", http.StatusInternalServerError)
+		return
+	}
+
+	writeJSON(w, http.StatusOK, map[string]any{"orders": orders})
+}
+
+func (a *app) handleAdminOrders(w http.ResponseWriter, r *http.Request) {
+	if r.Method != http.MethodGet {
+		http.Error(w, "method not allowed", http.StatusMethodNotAllowed)
+		return
+	}
+
+	authUser, _, err := a.requireAuthUser(r)
+	if err != nil {
+		http.Error(w, "unauthorized", http.StatusUnauthorized)
+		return
+	}
+
+	if strings.ToLower(strings.TrimSpace(authUser.Role)) != "admin" {
+		http.Error(w, "forbidden", http.StatusForbidden)
+		return
+	}
+
+	orders, err := a.loadOrdersWithArgs(r.Context(), "WHERE 1=1")
+	if err != nil {
+		http.Error(w, "failed to load admin orders", http.StatusInternalServerError)
 		return
 	}
 
