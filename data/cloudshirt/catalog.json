@@ -1,0 +1,340 @@
+{
+  "brands": [
+    "Azure",
+    ".NET",
+    "Visual Studio",
+    "SQL Server",
+    "Other"
+  ],
+  "types": [
+    "Mug",
+    "T-Shirt",
+    "Sheet"
+  ],
+  "items": [
+    {
+      "id": 1,
+      "name": ".NET Bot Black Sweatshirt",
+      "description": ".NET Bot Black Sweatshirt",
+      "price": 19.5,
+      "brand": ".NET",
+      "type": "T-Shirt",
+      "image": "/images/products/1.avif"
+    },
+    {
+      "id": 2,
+      "name": ".NET Black & White Mug",
+      "description": ".NET Black & White Mug",
+      "price": 8.5,
+      "brand": ".NET",
+      "type": "Mug",
+      "image": "/images/products/2.avif"
+    },
+    {
+      "id": 3,
+      "name": "Prism White T-Shirt",
+      "description": "Prism White T-Shirt",
+      "price": 12.0,
+      "brand": "Other",
+      "type": "T-Shirt",
+      "image": "/images/products/3.avif"
+    },
+    {
+      "id": 4,
+      "name": ".NET Foundation Sweatshirt",
+      "description": ".NET Foundation Sweatshirt",
+      "price": 12.0,
+      "brand": ".NET",
+      "type": "T-Shirt",
+      "image": "/images/products/4.avif"
+    },
+    {
+      "id": 5,
+      "name": "Roslyn Red Sheet",
+      "description": "Roslyn Red Sheet",
+      "price": 8.5,
+      "brand": "Other",
+      "type": "Sheet",
+      "image": "/images/products/5.avif"
+    },
+    {
+      "id": 6,
+      "name": ".NET Blue Sweatshirt",
+      "description": ".NET Blue Sweatshirt",
+      "price": 12.0,
+      "brand": ".NET",
+      "type": "T-Shirt",
+      "image": "/images/products/6.avif"
+    },
+    {
+      "id": 7,
+      "name": "Roslyn Red T-Shirt",
+      "description": "Roslyn Red T-Shirt",
+      "price": 12.0,
+      "brand": "Other",
+      "type": "T-Shirt",
+      "image": "/images/products/7.avif"
+    },
+    {
+      "id": 8,
+      "name": "Kudu Purple Sweatshirt",
+      "description": "Kudu Purple Sweatshirt",
+      "price": 8.5,
+      "brand": "Other",
+      "type": "T-Shirt",
+      "image": "/images/products/8.avif"
+    },
+    {
+      "id": 9,
+      "name": "Cup<T> White Mug",
+      "description": "Cup<T> White Mug",
+      "price": 12.0,
+      "brand": "Other",
+      "type": "Mug",
+      "image": "/images/products/9.avif"
+    },
+    {
+      "id": 10,
+      "name": ".NET Foundation Sheet",
+      "description": ".NET Foundation Sheet",
+      "price": 12.0,
+      "brand": ".NET",
+      "type": "Sheet",
+      "image": "/images/products/10.avif"
+    },
+    {
+      "id": 11,
+      "name": "Cup<T> Sheet",
+      "description": "Cup<T> Sheet",
+      "price": 8.5,
+      "brand": ".NET",
+      "type": "Sheet",
+      "image": "/images/products/11.avif"
+    },
+    {
+      "id": 12,
+      "name": "Prism White TShirt",
+      "description": "Prism White TShirt",
+      "price": 12.0,
+      "brand": "Other",
+      "type": "T-Shirt",
+      "image": "/images/products/12.avif"
+    },
+    {
+      "id": 13,
+      "name": "Dad, What Are Clouds Made Of? T-Shirt",
+      "description": "Dad, What Are Clouds Made Of? T-Shirt",
+      "price": 18.5,
+      "brand": "Azure",
+      "type": "T-Shirt",
+      "image": "/images/products/13.avif"
+    },
+    {
+      "id": 14,
+      "name": "Azure Certified T-Shirt",
+      "description": "Azure Certified T-Shirt",
+      "price": 17.0,
+      "brand": "Azure",
+      "type": "T-Shirt",
+      "image": "/images/products/14.avif"
+    },
+    {
+      "id": 15,
+      "name": "Microsoft Teams T-Shirt",
+      "description": "Microsoft Teams T-Shirt",
+      "price": 18.5,
+      "brand": "Azure",
+      "type": "T-Shirt",
+      "image": "/images/products/15.avif"
+    },
+    {
+      "id": 16,
+      "name": "Git Going! T-Shirt",
+      "description": "Git Going! T-Shirt",
+      "price": 18.0,
+      "brand": "Azure",
+      "type": "T-Shirt",
+      "image": "/images/products/16.avif"
+    },
+    {
+      "id": 17,
+      "name": "Microsoft Teams Logo T-Shirt",
+      "description": "Microsoft Teams Logo T-Shirt",
+      "price": 19.0,
+      "brand": "Azure",
+      "type": "T-Shirt",
+      "image": "/images/products/17.avif"
+    },
+    {
+      "id": 18,
+      "name": "Cloud Architect Hourly Rate T-Shirt",
+      "description": "Cloud Architect Hourly Rate T-Shirt",
+      "price": 18.5,
+      "brand": "Azure",
+      "type": "T-Shirt",
+      "image": "/images/products/18.avif"
+    },
+    {
+      "id": 19,
+      "name": "SQL Server Database Administrator T-Shirt",
+      "description": "SQL Server Database Administrator T-Shirt",
+      "price": 18.0,
+      "brand": "SQL Server",
+      "type": "T-Shirt",
+      "image": "/images/products/19.avif"
+    },
+    {
+      "id": 20,
+      "name": "SQL for Beginners T-Shirt",
+      "description": "SQL for Beginners T-Shirt",
+      "price": 18.0,
+      "brand": "SQL Server",
+      "type": "T-Shirt",
+      "image": "/images/products/20.avif"
+    },
+    {
+      "id": 21,
+      "name": "Huge Fan of Databases T-Shirt",
+      "description": "Huge Fan of Databases T-Shirt",
+      "price": 19.5,
+      "brand": "SQL Server",
+      "type": "T-Shirt",
+      "image": "/images/products/21.avif"
+    },
+    {
+      "id": 22,
+      "name": "SQL Server DBA T-Shirt",
+      "description": "SQL Server DBA T-Shirt",
+      "price": 18.5,
+      "brand": "SQL Server",
+      "type": "T-Shirt",
+      "image": "/images/products/22.avif"
+    },
+    {
+      "id": 23,
+      "name": "i <? php T-Shirt",
+      "description": "i <? php T-Shirt",
+      "price": 19.5,
+      "brand": "Other",
+      "type": "T-Shirt",
+      "image": "/images/products/23.avif"
+    },
+    {
+      "id": 24,
+      "name": "Keep Calm I'm a DBA T-Shirt",
+      "description": "Keep Calm I'm a DBA T-Shirt",
+      "price": 18.5,
+      "brand": "SQL Server",
+      "type": "T-Shirt",
+      "image": "/images/products/24.avif"
+    },
+    {
+      "id": 25,
+      "name": "Microsoft Teams Word Art T-Shirt",
+      "description": "Microsoft Teams Word Art T-Shirt",
+      "price": 18.5,
+      "brand": "Azure",
+      "type": "T-Shirt",
+      "image": "/images/products/25.avif"
+    },
+    {
+      "id": 26,
+      "name": "There Is No Cloud T-Shirt",
+      "description": "There Is No Cloud T-Shirt",
+      "price": 18.0,
+      "brand": "Azure",
+      "type": "T-Shirt",
+      "image": "/images/products/26.avif"
+    },
+    {
+      "id": 27,
+      "name": "Azure Cloud Connect T-Shirt",
+      "description": "Azure Cloud Connect T-Shirt",
+      "price": 18.0,
+      "brand": "Azure",
+      "type": "T-Shirt",
+      "image": "/images/products/27.avif"
+    },
+    {
+      "id": 28,
+      "name": "Microsoft Office Logo T-Shirt",
+      "description": "Microsoft Office Logo T-Shirt",
+      "price": 18.5,
+      "brand": "Azure",
+      "type": "T-Shirt",
+      "image": "/images/products/28.avif"
+    },
+    {
+      "id": 29,
+      "name": "SQL QIC T-Shirt",
+      "description": "SQL QIC T-Shirt",
+      "price": 20.0,
+      "brand": "SQL Server",
+      "type": "T-Shirt",
+      "image": "/images/products/29.avif"
+    },
+    {
+      "id": 30,
+      "name": "Database Schema T-Shirt",
+      "description": "Database Schema T-Shirt",
+      "price": 18.0,
+      "brand": "SQL Server",
+      "type": "T-Shirt",
+      "image": "/images/products/30.avif"
+    },
+    {
+      "id": 31,
+      "name": "SELECT COUNT(*) T-Shirt",
+      "description": "SELECT COUNT(*) T-Shirt",
+      "price": 19.0,
+      "brand": "SQL Server",
+      "type": "T-Shirt",
+      "image": "/images/products/31.avif"
+    },
+    {
+      "id": 32,
+      "name": "VS Code Logo T-Shirt",
+      "description": "VS Code Logo T-Shirt",
+      "price": 19.5,
+      "brand": "Visual Studio",
+      "type": "T-Shirt",
+      "image": "/images/products/32.avif"
+    },
+    {
+      "id": 33,
+      "name": "Semicolon Programmer T-Shirt",
+      "description": "Semicolon Programmer T-Shirt",
+      "price": 20.0,
+      "brand": "Visual Studio",
+      "type": "T-Shirt",
+      "image": "/images/products/33.avif"
+    },
+    {
+      "id": 34,
+      "name": "Visual Studio Logo T-Shirt",
+      "description": "Visual Studio Logo T-Shirt",
+      "price": 18.5,
+      "brand": "Visual Studio",
+      "type": "T-Shirt",
+      "image": "/images/products/34.avif"
+    },
+    {
+      "id": 35,
+      "name": "Visual Studio Logo Mug",
+      "description": "Visual Studio Logo Mug",
+      "price": 10.5,
+      "brand": "Visual Studio",
+      "type": "Mug",
+      "image": "/images/products/35.avif"
+    },
+    {
+      "id": 37,
+      "name": "Design Is Thinking Made Visual T-Shirt",
+      "description": "Design Is Thinking Made Visual T-Shirt",
+      "price": 18.5,
+      "brand": "Other",
+      "type": "T-Shirt",
+      "image": "/images/products/37.avif"
+    }
+  ]
+}

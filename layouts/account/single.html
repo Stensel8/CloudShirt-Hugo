@@ -1,0 +1,104 @@
+{{ define "main" }}
+  <section class="mx-auto max-w-6xl px-4 py-8 lg:py-10" data-account-page>
+    <style>
+      .account-container {
+        border: 1px solid rgba(var(--color-neutral-200), 0.15);
+        background: rgba(var(--color-neutral-950), 0.4);
+        border-radius: 1.25rem;
+        padding: 1.2rem;
+        backdrop-filter: blur(14px);
+      }
+
+      .account-title {
+        margin: 0;
+        font-size: 2rem;
+        line-height: 1.2;
+      }
+
+      .account-copy {
+        color: rgb(var(--color-neutral-300));
+        line-height: 1.55;
+      }
+
+      .account-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+        gap: .8rem;
+        margin-top: 1rem;
+      }
+
+      .account-card {
+        border: 1px solid rgba(var(--color-neutral-200), 0.14);
+        border-radius: 1rem;
+        background: rgba(var(--color-neutral-950), 0.48);
+        padding: .9rem;
+      }
+
+      .account-label {
+        display: block;
+        color: rgb(var(--color-neutral-400));
+        font-size: .78rem;
+        text-transform: uppercase;
+        letter-spacing: .08em;
+      }
+
+      .account-value {
+        display: block;
+        margin-top: .22rem;
+        color: rgb(var(--color-neutral-100));
+        font-size: 1rem;
+        font-weight: 600;
+      }
+    </style>
+    <div class="account-container">
+      <p class="text-xs font-semibold uppercase tracking-[0.2em] text-primary-300">Account</p>
+      <h1 class="account-title mt-2 text-neutral-50">Mijn profiel</h1>
+      <p class="account-copy mt-3">Overzicht van je ingelogde CloudShirt-account en orderstatus.</p>
+
+      <div class="mt-5" data-account-guest hidden>
+        <p class="account-copy">Je bent niet ingelogd. Log eerst in om je accountgegevens te bekijken.</p>
+        <a class="cs-button cs-button--accent mt-2 inline-flex" href="/login/?returnTo=/account/">Inloggen</a>
+      </div>
+
+      <div data-account-profile hidden>
+        <div class="account-grid">
+          <div class="account-card">
+            <span class="account-label">Naam</span>
+            <span class="account-value" data-account-display-name>-</span>
+          </div>
+          <div class="account-card">
+            <span class="account-label">E-mailadres</span>
+            <span class="account-value" data-account-email>-</span>
+          </div>
+          <div class="account-card">
+            <span class="account-label">Rol</span>
+            <span class="account-value" data-account-role>-</span>
+          </div>
+          <div class="account-card">
+            <span class="account-label">Aangemaakt</span>
+            <span class="account-value" data-account-created>-</span>
+          </div>
+          <div class="account-card">
+            <span class="account-label">Orders</span>
+            <span class="account-value" data-account-orders>-</span>
+          </div>
+          <div class="account-card" data-account-admin hidden>
+            <span class="account-label">Admin</span>
+            <span class="account-value">Admin-paneel beschikbaar</span>
+          </div>
+        </div>
+
+        <div class="mt-5 flex flex-wrap gap-2">
+          <a class="cs-button" href="/orders/">Naar orders</a>
+          <a class="cs-button" href="/admin/" data-account-admin hidden>Naar admin</a>
+          <a class="cs-button" href="/cart/">Naar winkelwagen</a>
+          <button class="cs-button cs-button--accent" type="button" data-account-logout>Uitloggen</button>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <script src="/js/cloudshirt-core.js" defer></script>
+  <script src="/js/cloudshirt-api.js" defer></script>
+  <script src="/js/cloudshirt-storefront.js" defer></script>
+{{ end }}

@@ -1,0 +1,891 @@
+{{ $catalog := hugo.Data.cloudshirt.catalog }}
+{{ $items := $catalog.items }}
+{{ $brands := $catalog.brands }}
+{{ $types := $catalog.types }}
+{{ $view := .Params.cloudshirtView | default "home" }}
+
+<style>
+  .cs-storefront {
+    --cs-surface: rgba(var(--color-neutral-900), 0.72);
+    --cs-surface-soft: rgba(var(--color-neutral-800), 0.72);
+    --cs-border: rgba(var(--color-neutral-200), 0.16);
+    --cs-border-strong: rgba(var(--color-primary-400), 0.34);
+    --cs-text: rgb(var(--color-neutral-100));
+    --cs-muted: rgb(var(--color-neutral-400));
+    --cs-accent: rgb(var(--color-primary-400));
+    --cs-accent-strong: rgb(var(--color-primary-300));
+    width: min(1220px, calc(100vw - 2rem));
+    max-width: 1220px;
+    margin: 1.25rem 0 0;
+    margin-left: 50%;
+    transform: translateX(-50%);
+    padding: 1rem;
+    border-radius: 1.35rem;
+    border: 1px solid var(--cs-border);
+    background:
+      linear-gradient(180deg, rgba(var(--color-neutral-950), 0.42), rgba(var(--color-neutral-900), 0.78)),
+      radial-gradient(900px 420px at 50% 0%, rgba(var(--color-primary-500), 0.16), transparent 65%);
+    box-shadow: 0 24px 60px rgba(2, 6, 23, 0.42);
+    color: var(--cs-text);
+    overflow: clip;
+  }
+
+  .cs-storefront__hero {
+    display: grid;
+    gap: .75rem;
+    grid-template-columns: minmax(0, 1fr);
+    align-items: stretch;
+  }
+
+  .cs-storefront__hero-panel,
+  .cs-storefront__section,
+  .cs-storefront__checkout {
+    border: 1px solid var(--cs-border);
+    border-radius: 1.1rem;
+    background: var(--cs-surface);
+  }
+
+  .cs-storefront__hero-panel {
+    position: relative;
+    overflow: hidden;
+    min-height: 100%;
+    padding: 1rem 1rem 1.1rem;
+  }
+
+  .cs-storefront__hero-copy {
+    padding: 0;
+    display: grid;
+    gap: .85rem;
+  }
+
+  .cs-storefront__eyebrow {
+    margin: 0;
+    color: var(--cs-accent-strong);
+    font-size: .78rem;
+    font-weight: 700;
+    letter-spacing: .12em;
+    text-transform: uppercase;
+  }
+
+  .cs-storefront__title {
+    margin: 0;
+    font-size: clamp(2rem, 4vw, 3.5rem);
+    line-height: 1;
+    letter-spacing: -.04em;
+  }
+
+  .cs-storefront__description {
+    margin: 0;
+    max-width: 62ch;
+    color: var(--cs-muted);
+    font-size: 1rem;
+    line-height: 1.65;
+  }
+
+  .cs-storefront__hero-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: .5rem;
+  }
+
+  .cs-chip,
+  .cs-button,
+  .cs-filter,
+  .cs-sort,
+  .cs-pill {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: .45rem;
+    min-height: 2.35rem;
+    padding: .45rem .8rem;
+    border-radius: 999px;
+    border: 1px solid var(--cs-border);
+    background: rgba(var(--color-neutral-800), 0.82);
+    color: var(--cs-text);
+    font-size: .85rem;
+    text-decoration: none;
+    transition: transform .18s ease, border-color .18s ease, background-color .18s ease, color .18s ease;
+  }
+
+  .cs-button,
+  .cs-filter,
+  .cs-sort {
+    cursor: pointer;
+  }
+
+  .cs-button:hover,
+  .cs-filter:hover,
+  .cs-sort:hover,
+  .cs-chip:hover {
+    transform: translateY(-1px);
+    border-color: rgba(var(--color-primary-400), 0.44);
+  }
+
+  .cs-button--accent,
+  .cs-filter--active,
+  .cs-sort--active {
+    border-color: var(--cs-border-strong);
+    background: rgba(var(--color-primary-500), 0.2);
+    color: rgb(var(--color-primary-100));
+  }
+
+  .cs-hidden {
+    display: none !important;
+  }
+
+  .cs-storefront__toolbar {
+    margin-top: 1rem;
+    display: grid;
+    gap: .85rem;
+    grid-template-columns: minmax(0, 1fr) auto;
+    align-items: center;
+  }
+
+  .cs-storefront__search {
+    width: 100%;
+    min-height: 2.75rem;
+    padding: .7rem .9rem;
+    border-radius: .9rem;
+    border: 1px solid var(--cs-border);
+    background: rgba(var(--color-neutral-950), 0.52);
+    color: var(--cs-text);
+  }
+
+  .cs-storefront__search::placeholder {
+    color: rgba(var(--color-neutral-400), 0.9);
+  }
+
+  .cs-storefront__filters {
+    display: flex;
+    flex-wrap: wrap;
+    gap: .5rem;
+  }
+
+  .cs-storefront__section {
+    margin-top: 1rem;
+    padding: 1rem;
+  }
+
+  .cs-storefront__section--flat {
+    padding: .85rem 1rem;
+  }
+
+  .cs-storefront__section-header {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: .8rem;
+    margin-bottom: .9rem;
+  }
+
+  .cs-storefront__section-title {
+    margin: 0;
+    font-size: 1.2rem;
+    letter-spacing: -.02em;
+  }
+
+  .cs-storefront__section-meta {
+    color: var(--cs-muted);
+    font-size: .88rem;
+  }
+
+  .cs-pager {
+    display: grid;
+    grid-template-columns: auto minmax(0, 1fr) auto;
+    align-items: center;
+    gap: .7rem;
+    margin-bottom: .9rem;
+  }
+
+  .cs-pager__button {
+    min-height: 2.2rem;
+    padding: .45rem .82rem;
+    border-radius: 999px;
+    border: 1px solid var(--cs-border);
+    background: rgba(var(--color-neutral-900), 0.72);
+    color: var(--cs-text);
+    cursor: pointer;
+  }
+
+  .cs-pager__button:disabled {
+    opacity: .45;
+    cursor: not-allowed;
+  }
+
+  .cs-pager__info {
+    text-align: center;
+    color: var(--cs-muted);
+    font-size: .92rem;
+  }
+
+  .cs-storefront__feedback {
+    margin-top: 1rem;
+    padding: .85rem 1rem;
+    border-radius: 1rem;
+    border: 1px solid rgba(var(--color-primary-400), 0.24);
+    background: rgba(var(--color-primary-500), 0.08);
+    color: rgb(var(--color-neutral-100));
+    box-shadow: inset 0 0 0 1px rgba(var(--color-neutral-950), 0.18);
+    transition: transform .18s ease, border-color .18s ease, background-color .18s ease;
+  }
+
+  .cs-storefront__feedback[data-has-message="false"] {
+    opacity: .82;
+  }
+
+  .cs-storefront__feedback--success {
+    border-color: rgba(var(--color-primary-300), 0.42);
+    background: rgba(var(--color-primary-500), 0.14);
+  }
+
+  .cs-storefront__feedback--warning {
+    border-color: rgba(251, 191, 36, 0.42);
+    background: rgba(120, 53, 15, 0.22);
+  }
+
+  .cs-storefront__muted {
+    color: var(--cs-muted);
+  }
+
+  .cs-storefront__grid {
+    display: grid;
+    gap: .85rem;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 280px));
+    justify-content: center;
+  }
+
+  .cs-product {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    max-width: 280px;
+    overflow: hidden;
+    border-radius: 1rem;
+    border: 1px solid var(--cs-border);
+    background: rgba(var(--color-neutral-950), 0.48);
+    transition: transform .18s ease, border-color .18s ease, background-color .18s ease;
+  }
+
+  .cs-product:hover {
+    transform: translateY(-2px);
+    border-color: rgba(var(--color-primary-400), 0.38);
+    background: rgba(var(--color-neutral-950), 0.62);
+  }
+
+  .cs-product--pulse {
+    animation: csPulse .28s ease;
+  }
+
+  .cs-product__media {
+    position: relative;
+    aspect-ratio: 1 / 1;
+    background: rgba(var(--color-neutral-900), 0.85);
+  }
+
+  .cs-product__image {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  .cs-product__badge {
+    position: absolute;
+    left: .75rem;
+    top: .75rem;
+    padding: .3rem .55rem;
+    border-radius: 999px;
+    background: rgba(var(--color-neutral-950), 0.78);
+    border: 1px solid var(--cs-border);
+    color: rgb(var(--color-neutral-200));
+    font-size: .72rem;
+    backdrop-filter: blur(12px);
+  }
+
+  .cs-product__body {
+    display: flex;
+    flex-direction: column;
+    gap: .5rem;
+    padding: .85rem;
+    flex: 1;
+  }
+
+  .cs-product__name {
+    margin: 0;
+    font-size: 1rem;
+    line-height: 1.3;
+    letter-spacing: -.02em;
+  }
+
+  .cs-product__meta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: .4rem;
+    color: var(--cs-muted);
+    font-size: .78rem;
+  }
+
+  .cs-product__price {
+    margin-top: .1rem;
+    font-size: 1.05rem;
+    font-weight: 800;
+    color: var(--cs-accent-strong);
+  }
+
+  .cs-product__cta {
+    margin-top: auto;
+    width: 100%;
+    border-radius: .85rem;
+    min-height: 2.6rem;
+  }
+
+  .cs-product__cta--flash {
+    animation: csButtonFlash .35s ease;
+  }
+
+  .cs-product__secondary {
+    display: none;
+  }
+
+  .cs-cart__list {
+    display: grid;
+    gap: .7rem;
+    margin-top: .75rem;
+  }
+
+  .cs-cart__item {
+    display: grid;
+    grid-template-columns: 96px minmax(0, 1fr) auto;
+    gap: .75rem;
+    align-items: start;
+    border: 1px solid var(--cs-border);
+    border-radius: .95rem;
+    background: rgba(var(--color-neutral-900), 0.52);
+    padding: .6rem;
+  }
+
+  .cs-cart__thumb {
+    width: 96px;
+    height: 96px;
+    border-radius: .72rem;
+    border: 1px solid var(--cs-border);
+    background: rgba(var(--color-neutral-950), 0.72);
+    object-fit: cover;
+    object-position: center;
+    display: block;
+    flex: none;
+  }
+
+  .cs-cart__title {
+    margin: 0;
+    font-size: 1rem;
+    line-height: 1.3;
+  }
+
+  .cs-cart__meta {
+    margin-top: .2rem;
+    color: var(--cs-muted);
+    font-size: .9rem;
+  }
+
+  .cs-cart__controls {
+    display: flex;
+    flex-wrap: wrap;
+    gap: .35rem;
+    align-content: start;
+    justify-content: flex-end;
+  }
+
+  .cs-cart__item--removing {
+    animation: csFadeOut .18s ease forwards;
+  }
+
+  .cs-cart__checkout-note {
+    margin: .65rem 0 0;
+    color: var(--cs-muted);
+    font-size: .9rem;
+    line-height: 1.55;
+  }
+
+  .cs-storefront__checkout-grid {
+    display: grid;
+    gap: .85rem;
+    grid-template-columns: minmax(0, 1.45fr) minmax(280px, .85fr);
+    align-items: start;
+  }
+
+  .cs-storefront[data-cloudshirt-view="cart"] {
+    gap: .85rem;
+  }
+
+  .cs-storefront[data-cloudshirt-view="cart"] .cs-storefront__hero-panel {
+    padding: .85rem 0 0;
+    border: 0;
+    border-radius: 0;
+    background: transparent;
+    box-shadow: none;
+    min-height: 0;
+  }
+
+  .cs-storefront[data-cloudshirt-view="cart"] .cs-storefront__title {
+    font-size: clamp(1.7rem, 3vw, 2.7rem);
+  }
+
+  .cs-storefront[data-cloudshirt-view="cart"] .cs-storefront__description {
+    max-width: 50ch;
+    font-size: .95rem;
+  }
+
+  .cs-storefront[data-cloudshirt-view="cart"] .cs-storefront__checkout {
+    padding: 0;
+    border: 0;
+    border-radius: 0;
+    background: transparent;
+    box-shadow: none;
+  }
+
+  .cs-storefront[data-cloudshirt-view="cart"] .cs-storefront__checkout > .cs-storefront__section-header {
+    margin-bottom: .7rem;
+    padding: 0 .1rem;
+  }
+
+  .cs-storefront[data-cloudshirt-view="cart"] .cs-storefront__section {
+    background: rgba(var(--color-neutral-950), 0.32);
+    border-color: rgba(var(--color-neutral-200), 0.12);
+  }
+
+  .cs-storefront[data-cloudshirt-view="cart"] .cs-cart {
+    background: rgba(var(--color-neutral-950), 0.28);
+  }
+
+  .cs-storefront[data-cloudshirt-view="cart"] .cs-cart__item {
+    grid-template-columns: 84px minmax(0, 1fr) auto;
+    background: rgba(var(--color-neutral-900), 0.36);
+    border-color: rgba(var(--color-neutral-200), 0.1);
+    padding: .55rem;
+  }
+
+  .cs-storefront[data-cloudshirt-view="cart"] .cs-cart__thumb {
+    width: 84px;
+    height: 84px;
+  }
+
+  .cs-storefront[data-cloudshirt-view="cart"] .cs-cart__controls {
+    justify-content: flex-start;
+  }
+
+  .cs-order-list {
+    display: grid;
+    gap: .75rem;
+  }
+
+  .cs-order-card {
+    overflow: hidden;
+    border-radius: 1rem;
+    border: 1px solid var(--cs-border);
+    background: rgba(var(--color-neutral-950), 0.48);
+  }
+
+  .cs-order-card[open] {
+    border-color: rgba(var(--color-primary-400), 0.34);
+    background: rgba(var(--color-neutral-950), 0.58);
+  }
+
+  .cs-order-card__summary {
+    list-style: none;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    padding: .95rem 1rem;
+  }
+
+  .cs-order-card__summary::-webkit-details-marker {
+    display: none;
+  }
+
+  .cs-order-card__summary::after {
+    content: "+";
+    flex: none;
+    width: 1.9rem;
+    height: 1.9rem;
+    display: grid;
+    place-items: center;
+    border-radius: 999px;
+    border: 1px solid var(--cs-border);
+    color: var(--cs-accent-strong);
+    background: rgba(var(--color-neutral-900), 0.75);
+  }
+
+  .cs-order-card[open] .cs-order-card__summary::after {
+    content: "−";
+  }
+
+  .cs-order-card__title {
+    margin: 0;
+    font-size: 1rem;
+    font-weight: 700;
+    letter-spacing: -.01em;
+  }
+
+  .cs-order-card__meta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: .45rem .9rem;
+    margin-top: .2rem;
+    color: var(--cs-muted);
+    font-size: .84rem;
+  }
+
+  .cs-order-card__total {
+    font-size: 1.05rem;
+    font-weight: 800;
+    color: var(--cs-accent-strong);
+    white-space: nowrap;
+  }
+
+  .cs-order-card__body {
+    border-top: 1px solid var(--cs-border);
+    padding: 1rem;
+  }
+
+  .cs-order-card__items {
+    display: grid;
+    gap: .5rem;
+  }
+
+  .cs-order-card__item {
+    display: flex;
+    align-items: start;
+    justify-content: space-between;
+    gap: 1rem;
+    padding: .75rem .85rem;
+    border-radius: .9rem;
+    background: rgba(var(--color-neutral-900), 0.6);
+  }
+
+  .cs-order-card__item-name {
+    font-weight: 600;
+  }
+
+  .cs-order-card__item-meta {
+    margin-top: .18rem;
+    color: var(--cs-muted);
+    font-size: .84rem;
+  }
+
+  .cs-order-card__item-total {
+    flex: none;
+    color: rgb(var(--color-neutral-200));
+    font-weight: 700;
+  }
+
+  .cs-admin-products {
+    display: grid;
+    gap: .7rem;
+  }
+
+  .cs-admin-product {
+    border: 1px solid var(--cs-border);
+    border-radius: .95rem;
+    background: rgba(var(--color-neutral-900), 0.52);
+    padding: .85rem;
+    display: grid;
+    gap: .6rem;
+  }
+
+  .cs-admin-product__head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: .75rem;
+  }
+
+  .cs-admin-product__title {
+    margin: 0;
+    font-size: 1rem;
+    font-weight: 700;
+  }
+
+  .cs-admin-product__meta {
+    color: var(--cs-muted);
+    font-size: .85rem;
+  }
+
+  .cs-admin-product__fields {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    gap: .55rem;
+  }
+
+  .cs-admin-product__field {
+    display: grid;
+    gap: .25rem;
+  }
+
+  .cs-admin-product__field label {
+    color: var(--cs-muted);
+    font-size: .78rem;
+  }
+
+  .cs-admin-product__field input {
+    min-height: 2.2rem;
+    padding: .45rem .65rem;
+    border-radius: .72rem;
+    border: 1px solid var(--cs-border);
+    background: rgba(var(--color-neutral-950), 0.55);
+    color: var(--cs-text);
+  }
+
+  .cs-is-hidden {
+    display: none !important;
+  }
+
+  .cs-api-blocker {
+    margin-top: 1rem;
+    border: 1px solid rgba(248, 113, 113, 0.35);
+    background: rgba(127, 29, 29, 0.22);
+    border-radius: 1rem;
+    padding: 1rem;
+  }
+
+  .cs-api-blocker h3 {
+    margin: 0 0 .35rem;
+  }
+
+  .cs-storefront--disabled .cs-storefront__toolbar,
+  .cs-storefront--disabled #cs-catalogus {
+    display: none;
+  }
+
+  @keyframes csSlideIn {
+    from { opacity: 0; transform: translateY(6px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  @keyframes csFadeOut {
+    from { opacity: 1; transform: scale(1); }
+    to { opacity: 0; transform: scale(.97); }
+  }
+
+  @keyframes csPulse {
+    0% { transform: scale(1); }
+    45% { transform: scale(1.02); }
+    100% { transform: scale(1); }
+  }
+
+  @keyframes csButtonFlash {
+    0% { transform: translateY(0) scale(1); }
+    45% { transform: translateY(-1px) scale(1.02); }
+    100% { transform: translateY(0) scale(1); }
+  }
+
+  @media (max-width: 900px) {
+    .cs-storefront {
+      width: calc(100vw - 1rem);
+      margin-top: .85rem;
+      padding: .85rem;
+    }
+
+    .cs-storefront__hero,
+    .cs-storefront__toolbar {
+      grid-template-columns: 1fr;
+    }
+
+    .cs-storefront__checkout-grid {
+      grid-template-columns: 1fr;
+    }
+
+    .cs-cart__item {
+      grid-template-columns: 84px minmax(0, 1fr);
+    }
+
+    .cs-cart__thumb {
+      width: 84px;
+      height: 84px;
+    }
+
+    .cs-cart__controls {
+      grid-column: 1 / -1;
+      justify-content: flex-start;
+    }
+
+    .cs-pager {
+      grid-template-columns: 1fr;
+      justify-items: stretch;
+    }
+
+    .cs-pager__info {
+      order: -1;
+    }
+  }
+</style>
+
+<section class="cs-storefront" data-cloudshirt-storefront data-cloudshirt-view="{{ $view }}">
+  {{ if ne $view "home" }}
+    <div class="cs-storefront__hero">
+      <div class="cs-storefront__hero-panel">
+        <div class="cs-storefront__hero-copy">
+          <p class="cs-storefront__eyebrow">CloudShirt</p>
+          <h1 class="cs-storefront__title">{{ if eq $view "cart" }}Winkelwagen{{ else if eq $view "orders" }}Orders{{ else if eq $view "admin" }}Admin{{ else }}Shop{{ end }}</h1>
+          <p class="cs-storefront__description">
+            {{ if eq $view "cart" }}Wijzig aantallen en plaats een order.{{ else if eq $view "orders" }}Bekijk je orderhistorie en details.{{ else if eq $view "admin" }}Beheer en controleer alle geplaatste orders.{{ end }}
+          </p>
+        </div>
+      </div>
+    </div>
+  {{ end }}
+
+  <div class="cs-api-blocker cs-hidden" data-api-blocker>
+    <h3>Storefront tijdelijk niet beschikbaar</h3>
+    <p>
+      De API is niet bereikbaar. Start de services opnieuw met
+      <strong>docker compose up -d --build</strong>.
+    </p>
+  </div>
+
+  {{ if eq $view "home" }}
+    <div class="cs-storefront__section cs-storefront__section--flat">
+      <div class="cs-storefront__toolbar" style="margin-top:0;">
+      <input class="cs-storefront__search" type="search" placeholder="Zoek een product, merk of type..." aria-label="Zoek producten" data-product-search>
+      <div class="cs-storefront__filters" data-brand-filters></div>
+      </div>
+      <div class="cs-storefront__toolbar" style="margin-top:.65rem;">
+        <div class="cs-storefront__filters" data-type-filters></div>
+        <div class="cs-storefront__filters" aria-label="Sorteer producten">
+          <button class="cs-sort cs-sort--active" type="button" data-sort="featured">Uitgelicht</button>
+          <button class="cs-sort" type="button" data-sort="name-asc">Naam A-Z</button>
+          <button class="cs-sort" type="button" data-sort="price-asc">Prijs laag-hoog</button>
+          <button class="cs-sort" type="button" data-sort="price-desc">Prijs hoog-laag</button>
+        </div>
+      </div>
+    </div>
+  {{ end }}
+
+  {{ if eq $view "home" }}
+    <section id="cs-catalogus" class="cs-storefront__section">
+      <div class="cs-storefront__section-header">
+        <div>
+          <h2 class="cs-storefront__section-title">Productcatalogus</h2>
+          <div class="cs-storefront__section-meta" data-product-count>{{ len $items }} items zichtbaar</div>
+        </div>
+      </div>
+
+      <div class="cs-pager" aria-label="Catalogus paginering">
+        <button class="cs-pager__button" type="button" data-page-prev>‹ Vorige</button>
+        <div class="cs-pager__info" data-page-info></div>
+        <button class="cs-pager__button" type="button" data-page-next>Volgende ›</button>
+      </div>
+
+      <div class="cs-storefront__grid" data-product-grid>
+        {{ range $index, $item := $items }}
+          <article
+            class="cs-product"
+            data-product-card
+            data-product-index="{{ $index }}"
+            data-product-id="{{ $item.id }}"
+            data-product-name="{{ $item.name | plainify | lower }}"
+            data-product-brand="{{ $item.brand | urlize }}"
+            data-product-type="{{ $item.type | urlize }}"
+            data-product-price="{{ printf "%.2f" $item.price }}"
+          >
+            <div class="cs-product__media">
+              <img class="cs-product__image" src="{{ $item.image }}" alt="{{ $item.name }}" loading="lazy" decoding="async" width="640" height="640">
+              <span class="cs-product__badge">{{ $item.brand }}</span>
+            </div>
+            <div class="cs-product__body">
+              <h3 class="cs-product__name">{{ $item.name }}</h3>
+              <div class="cs-product__meta">
+                <span>{{ $item.type }}</span>
+                <span>Product #{{ $item.id }}</span>
+              </div>
+              <div class="cs-product__price">€{{ printf "%.2f" $item.price }}</div>
+              <button
+                class="cs-button cs-button--accent cs-product__cta"
+                type="button"
+                data-add-to-cart
+                data-product-id="{{ $item.id }}"
+                data-product-name="{{ $item.name }}"
+                data-product-price="{{ printf "%.2f" $item.price }}"
+                data-product-image="{{ $item.image }}"
+                data-product-brand="{{ $item.brand }}"
+                data-product-type="{{ $item.type }}"
+              >
+                Toevoegen aan winkelwagen
+              </button>
+            </div>
+          </article>
+        {{ end }}
+      </div>
+    </section>
+  {{ end }}
+
+  {{ if eq $view "cart" }}
+    <section id="cs-winkelwagen" class="cs-storefront__checkout">
+      <div class="cs-storefront__section-header">
+        <div>
+          <h2 class="cs-storefront__section-title">Overzicht</h2>
+        </div>
+        <div class="cs-storefront__section-meta"><span data-cart-count>0</span> items in winkelwagen</div>
+      </div>
+
+      <div class="cs-storefront__checkout-grid">
+        <aside class="cs-cart cs-storefront__section">
+          <div>
+            <h3 class="cs-storefront__section-title" style="font-size:1rem;">Jouw winkelwagen</h3>
+          </div>
+          <div class="cs-cart__list" data-cart-items></div>
+          <p class="cs-cart__empty" data-cart-empty>Je winkelwagen is leeg. Voeg een product toe om te beginnen.</p>
+          <div class="cs-cart__total">
+            <span>Totaal</span>
+            <span>€<span data-cart-total>0.00</span></span>
+          </div>
+          <button class="cs-button cs-button--accent" type="button" data-place-order>Plaats order</button>
+        </aside>
+
+        <div class="cs-storefront__section">
+          <h3 class="cs-storefront__section-title" style="font-size:1rem;">Checkout</h3>
+          <p class="cs-cart__checkout-note" data-checkout-status>Log in om af te rekenen. Je winkelwagen blijft bewaard.</p>
+          <div class="cs-storefront__filters" style="margin-top:.65rem;">
+            <a class="cs-button" href="/login/?returnTo=/cart/" data-checkout-link>Log in om af te rekenen</a>
+          </div>
+        </div>
+      </div>
+    </section>
+  {{ end }}
+
+  {{ if eq $view "admin" }}
+    <section class="cs-storefront__section">
+      <div class="cs-storefront__section-header">
+        <div>
+          <h2 class="cs-storefront__section-title">Artikelenbeheer</h2>
+          <div class="cs-storefront__section-meta">Werk productgegevens bij en sla direct op.</div>
+        </div>
+      </div>
+      <div class="cs-admin-products" data-admin-products>
+        <div class="cs-storefront__muted">Producten worden geladen...</div>
+      </div>
+    </section>
+  {{ end }}
+
+  {{ if or (eq $view "orders") (eq $view "admin") }}
+    <section class="cs-storefront__section">
+      <div class="cs-storefront__section-header">
+        <div>
+          <h2 class="cs-storefront__section-title">{{ if eq $view "admin" }}Orderbeheer{{ else }}Orders{{ end }}</h2>
+          <div class="cs-storefront__section-meta">{{ if eq $view "admin" }}Overzicht van alle orders in het systeem.{{ else }}Klik op een order om de details uit te klappen.{{ end }}</div>
+        </div>
+      </div>
+
+      <div class="cs-order-list" data-order-rows>
+        <div class="cs-storefront__muted">Nog geen orders geplaatst.</div>
+      </div>
+    </section>
+  {{ end }}
+
+  <script src="/js/cloudshirt-core.js" defer></script>
+  <script src="/js/cloudshirt-api.js" defer></script>
+  <script src="/js/cloudshirt-storefront.js" defer></script>
+</section>

@@ -1,0 +1,142 @@
+{{ define "main" }}
+  <section class="mx-auto max-w-6xl px-4 py-8 lg:py-10" data-login-page>
+    <style>
+      .login-container {
+        border: 1px solid rgba(var(--color-neutral-200), 0.15);
+        background: rgba(var(--color-neutral-950), 0.4);
+        border-radius: 1.25rem;
+        padding: 1.2rem;
+        backdrop-filter: blur(14px);
+      }
+
+      .login-input {
+        min-height: 2.8rem;
+        border-radius: .75rem;
+        border: 1px solid rgba(var(--color-neutral-200), 0.18);
+        background: rgba(var(--color-neutral-950), 0.55);
+        color: rgb(var(--color-neutral-100));
+        padding: .55rem .85rem;
+      }
+
+      .login-heading {
+        margin: 0;
+        font-size: 2rem;
+        line-height: 1.2;
+      }
+
+      .login-copy,
+      .login-note,
+      .login-demo {
+        color: rgb(var(--color-neutral-300));
+        line-height: 1.55;
+      }
+
+      .login-form-row {
+        display: flex;
+        flex-wrap: wrap;
+        gap: .9rem;
+      }
+
+      .login-field {
+        display: grid;
+        gap: .4rem;
+        flex: 1 1 280px;
+      }
+
+      .login-label {
+        color: rgb(var(--color-neutral-200));
+        font-size: .9rem;
+      }
+
+      .login-actions {
+        margin-top: .9rem;
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+        justify-content: space-between;
+        gap: .7rem;
+      }
+
+      .login-remember {
+        display: inline-flex;
+        align-items: center;
+        gap: .45rem;
+        color: rgb(var(--color-neutral-200));
+        font-size: .9rem;
+      }
+
+      .login-demo {
+        margin-top: 1.1rem;
+        display: grid;
+        gap: .35rem;
+      }
+
+      .login-demo-item {
+        margin: 0;
+      }
+
+      .login-demo-actions {
+        margin-top: .45rem;
+        display: flex;
+        flex-wrap: wrap;
+        gap: .45rem;
+      }
+
+      .login-demo strong {
+        color: rgb(var(--color-neutral-100));
+      }
+
+      @media (max-width: 720px) {
+        .login-actions {
+          align-items: flex-start;
+          flex-direction: column;
+        }
+      }
+    </style>
+    <div class="login-container">
+      <p class="text-xs font-semibold uppercase tracking-[0.2em] text-primary-300">Inloggen</p>
+      <h1 class="login-heading mt-2 text-neutral-50">Account</h1>
+      <p class="login-copy mt-3">Log in om je winkelwagen af te rekenen of direct je orders te bekijken.</p>
+
+      <form class="mt-6" data-login-form>
+        <div class="login-form-row">
+          <div class="login-field">
+            <label class="login-label" for="login-username">E-mailadres</label>
+            <input id="login-username" class="login-input" type="email" autocomplete="username" data-login-email>
+          </div>
+          <div class="login-field">
+            <label class="login-label" for="login-password">Wachtwoord</label>
+            <input id="login-password" class="login-input" type="password" autocomplete="current-password" data-login-password>
+          </div>
+        </div>
+
+        <div class="login-actions">
+          <label class="login-remember">
+            <input type="checkbox" data-login-remember>
+            <span>Onthoud mij</span>
+          </label>
+
+          <div class="flex gap-2">
+            <button class="cs-button cs-button--accent" type="submit" data-login-submit>Inloggen</button>
+            <a class="cs-button" href="/">Terug naar winkel</a>
+          </div>
+        </div>
+
+        <p class="mt-4 text-sm login-note" data-login-status>Gebruik je accountgegevens om in te loggen.</p>
+      </form>
+
+      <div class="login-demo text-sm">
+        <p class="login-demo-item"><strong>Demo-gebruiker:</strong> demouser@microsoft.com / Pass@word1</p>
+        <p class="login-demo-item"><strong>Admin-gebruiker:</strong> admin@microsoft.com / Pass@word1</p>
+        <div class="login-demo-actions">
+          <button class="cs-chip" type="button" data-login-fill="demo">Inloggen als demo (vul in)</button>
+          <button class="cs-chip" type="button" data-login-fill="admin">Inloggen als admin (vul in)</button>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <script src="/js/cloudshirt-core.js" defer></script>
+  <script src="/js/cloudshirt-api.js" defer></script>
+  <script src="/js/cloudshirt-storefront.js" defer></script>
+{{ end }}
