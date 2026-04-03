@@ -17,6 +17,9 @@
 
   const apiFactory = window.cloudshirtApiFactory;
   if (!apiFactory || typeof apiFactory.create !== "function") {
+    if (window.console && typeof window.console.error === "function") {
+      window.console.error("CloudShirt API-module ontbreekt. Controleer of /js/cloudshirt-api.js geladen is.");
+    }
     return;
   }
 
