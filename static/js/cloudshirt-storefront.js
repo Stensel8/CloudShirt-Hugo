@@ -76,6 +76,10 @@
     return Array.isArray(payload.orders) ? payload.orders : [];
   }
 
+  /**
+   * Fetch all orders for an authenticated admin account.
+   * This endpoint differs from getOrdersForUser(), which returns only personal orders.
+   */
   async function getOrdersForAdmin() {
     const payload = await fetchJSON(`${apiBase}/admin/orders`, {
       headers: getAuthHeaders(),
@@ -124,8 +128,8 @@
     return Boolean(error) && (error.status === 401 || error.status === 403);
   }
 
-  function isAuthExpiredError(error) {
-    return Boolean(error) && error.status === 401;
+  function isForbiddenError(error) {
+    return Boolean(error) && error.status === 403;
   }
 
   async function loadAuthMe() {
@@ -823,7 +827,7 @@
         let loadedOrders = [];
         if (isAdminView) {
           if (!authUser) {
-            showToast(root, "Log in als admin om het admin-paneel te gebruiken.", "info");
+            showToast(root, "Log in als admin om het adminpaneel te gebruiken.", "info");
             window.location.href = "/login/?returnTo=/admin/";
             return;
           }
@@ -836,7 +840,7 @@
       } catch (error) {
         if (isUnauthorizedError(error)) {
           if (isAdminView) {
-            showToast(root, "Geen toegang tot admin orders.", "error");
+            showToast(root, isForbiddenError(error) ? "Geen toegang tot admin orders." : "Sessie verlopen. Log opnieuw in.", "error");
           } else {
             showToast(root, "Sessie verlopen. Log opnieuw in.", "error");
           }
@@ -946,7 +950,7 @@
         await syncBasket();
         showToast(root, `${product.name} toegevoegd aan winkelwagen`, "success");
       } catch (error) {
-        if (isAuthExpiredError(error)) {
+        if (isUnauthorizedError(error)) {
           await clearAuthSession();
           syncNavbarAuthUI();
         }
@@ -974,7 +978,7 @@
         await syncBasket();
         showToast(root, "Winkelwagen bijgewerkt", "info");
       } catch (error) {
-        if (isAuthExpiredError(error)) {
+        if (isUnauthorizedError(error)) {
           await clearAuthSession();
           syncNavbarAuthUI();
         }
@@ -1171,7 +1175,7 @@
             showToast(root, "Order geplaatst", "success");
             window.location.href = "/orders/";
           } catch (error) {
-            if (isAuthExpiredError(error)) {
+            if (isUnauthorizedError(error)) {
               await clearAuthSession();
               syncNavbarAuthUI();
             }

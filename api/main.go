@@ -4,10 +4,10 @@ import (
 	"context"
 	"database/sql"
 	"errors"
-	"fmt"
 	"log"
 	"net/http"
 	"os"
+	"strconv"
 	"strings"
 	"sync"
 	"time"
@@ -771,15 +771,14 @@ func (a *app) handleAdminOrders(w http.ResponseWriter, r *http.Request) {
 	limit := 100
 	queryLimit := strings.TrimSpace(r.URL.Query().Get("limit"))
 	if queryLimit != "" {
-		var parsed int
-		if _, parseErr := fmt.Sscanf(queryLimit, "%d", &parsed); parseErr == nil {
+		if parsed, parseErr := strconv.Atoi(queryLimit); parseErr == nil {
 			if parsed > 0 && parsed <= 500 {
 				limit = parsed
 			}
 		}
 	}
 
-	orders, err := a.loadOrdersWithArgs(r.Context(), fmt.Sprintf("WHERE 1=1 LIMIT %d", limit))
+	orders, err := a.loadAdminOrders(r.Context(), limit)
 	if err != nil {
 		http.Error(w, "failed to load admin orders", http.StatusInternalServerError)
 		return
@@ -790,6 +789,38 @@ func (a *app) handleAdminOrders(w http.ResponseWriter, r *http.Request) {
 
 func (a *app) loadOrders(ctx context.Context, whereClause string, arg any) ([]order, error) {
 	return a.loadOrdersWithArgs(ctx, whereClause, arg)
+}
+
+func (a *app) loadAdminOrders(ctx context.Context, limit int) ([]order, error) {
+	query := `
+SELECT id, session_id, COALESCE(email, ''), status, total_amount::float8, created_at
+FROM orders
+ORDER BY created_at DESC
+LIMIT $1;
+`
+
+	rows, err := a.db.Query(ctx, query, limit)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+
+	orders := make([]order, 0)
+	for rows.Next() {
+		var o order
+		if err := rows.Scan(&o.ID, &o.SessionID, &o.Email, &o.Status, &o.Total, &o.CreatedAt); err != nil {
+			return nil, err
+		}
+
+		items, err := a.loadOrderItems(ctx, o.ID)
+		if err != nil {
+			return nil, err
+		}
+		o.Items = items
+		orders = append(orders, o)
+	}
+
+	return orders, nil
 }
 
 func (a *app) loadOrdersWithArgs(ctx context.Context, whereClause string, args ...any) ([]order, error) {
