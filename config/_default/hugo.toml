@@ -1,0 +1,11 @@
+baseURL = "https://stensel8.github.io/CloudShirt-Hugo/"
+defaultContentLanguage = "en"
+enableRobotsTXT = true
+enableEmoji = true
+summaryLength = 0
+
+[pagination]
+  pagerSize = 10
+
+[outputs]
+  home = ["HTML", "RSS", "JSON"]

@@ -1,80 +1,46 @@
 ---
-title: Aan de slag
-weight: 1
+title: "Aan de slag"
+description: "Hoe je de Hugo-site lokaal ontwikkelt en de CloudShirt-app draait."
+weight: 10
 ---
 
-> **Let op:** deze pagina beschrijft hoe je de **Hugo-site** lokaal ontwikkelt én hoe je de originele **CloudShirt-applicatie** draait. De broncode van de applicatie staat in de [Stensel8/CloudShirt](https://github.com/Stensel8/CloudShirt)-repository.
-
----
+> De broncode van de CloudShirt-applicatie staat in [Stensel8/CloudShirt](https://github.com/Stensel8/CloudShirt).
 
 ## Hugo-site lokaal draaien
 
-### Vereisten
-
-- [Hugo extended](https://gohugo.io/installation/) ≥ v0.159.2
-- [Go](https://go.dev/dl/) ≥ v1.24
-
-### Development server starten
+**Vereisten:** [Hugo extended](https://gohugo.io/installation/) ≥ v0.159.2 en [Go](https://go.dev/dl/) ≥ v1.24.
 
 ```bash
+# Development server
 hugo server
-```
 
-De site is beschikbaar op [http://localhost:1313](http://localhost:1313).
-
-### Productie-build maken
-
-```bash
+# Productie-build
 hugo --gc --minify
 ```
 
-De statische output wordt geplaatst in `public/`.
-
----
-
 ## CloudShirt-applicatie draaien
-
-De CloudShirt-applicatie staat in de [Stensel8/CloudShirt](https://github.com/Stensel8/CloudShirt)-repository. Clone die repository eerst:
 
 ```bash
 git clone https://github.com/Stensel8/CloudShirt.git
 cd CloudShirt
 ```
 
-### Lokale .NET app (.NET 10)
-
-Monolithische variant. Draait lokaal in één app met SQLite.
+### Lokale .NET-variant (SQLite)
 
 ```powershell
 .\scripts\run-dotnet.ps1
-```
 
-Tests uitvoeren:
-
-```powershell
+# Tests
 dotnet test .\*.sln
 ```
 
-### Docker app (containers)
-
-Containervariant met Docker Compose en PostgreSQL.
+### Docker-variant (PostgreSQL)
 
 ```powershell
 .\scripts\run-docker.ps1
 ```
 
----
-
-## Wanneer gebruik je welke variant?
-
-| Variant | Wanneer gebruiken |
+| Variant | Wanneer |
 |---|---|
-| Lokale .NET variant | Snel opstarten en debuggen, geen Docker nodig, data in SQLite |
-| Docker variant | Test de containersetup zoals die ook in de cloud draait, data in PostgreSQL |
-
----
-
-## Data en state
-
-- SQLite (lokale .NET) en PostgreSQL (Docker) delen **niet** automatisch dezelfde data/state.
-- Bij wisselen van modus start je dus met de state van de bijbehorende database.
+| .NET lokaal | Snel debuggen, geen Docker nodig |
+| Docker | Test containersetup zoals in de cloud |

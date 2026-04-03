@@ -1,10 +1,6 @@
 # Hugo build output
 public/
 resources/
-resources/_gen/
-
-# Hugo vendor (use go modules instead)
-_vendor/
 
 # Hugo cache
 .hugo_build.lock
@@ -12,8 +8,3 @@ _vendor/
 # OS
 .DS_Store
 Thumbs.db
-
-# Editor
-.vscode/settings.json
-*.suo
-*.user

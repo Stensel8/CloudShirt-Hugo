@@ -1,13 +1,9 @@
 ---
-title: Documentatie
-weight: 1
+title: "Documentatie"
+description: "Alles over CloudShirt – starten, stoppen en opdrachten."
 ---
 
-Welkom bij de CloudShirt documentatie. Hier vind je alle informatie over het starten, stoppen en gebruiken van de applicatie.
+Welkom bij de CloudShirt-documentatie.
 
-## Inhoud
-
-{{< cards >}}
-  {{< card link="getting-started" title="Aan de slag" icon="play" >}}
-  {{< card link="assignments" title="Opdrachten" icon="academic-cap" >}}
-{{< /cards >}}
+- [Aan de slag](getting-started) – hoe je de Hugo-site lokaal draait en de CloudShirt-app start
+- [Opdrachten](assignments) – de drie Cloud Automation Concepts-opdrachten

@@ -1,44 +1,31 @@
 ---
 title: "Assignment 1 – AWS Basics"
-weight: 1
+description: "Deploy CloudShirt op AWS EC2."
+weight: 10
 ---
 
-In deze opdracht maak je kennis met de basisconcepten van AWS en deploy je CloudShirt op een AWS-omgeving.
-
-## Doelen
-
-- AWS-account opzetten en IAM begrijpen
-- EC2-instantie aanmaken en configureren
-- CloudShirt lokaal starten en bereikbaar maken vanuit de cloud
+Maak kennis met AWS-basisconcepten en deploy CloudShirt op een EC2-instantie.
 
 ## Stappen
 
-{{< steps >}}
+**1. EC2-instantie starten**
 
-### Stap 1: AWS-account en IAM
+Start een `t2.micro` met Ubuntu 22.04 en open poorten `80` en `5106` in de security group.
 
-Maak een AWS-account aan (of gebruik een bestaand Learner Lab-account) en configureer een IAM-gebruiker met de benodigde rechten.
-
-### Stap 2: EC2-instantie starten
-
-Start een EC2-instantie (bijv. `t2.micro`) met Ubuntu 22.04 en open de juiste security group poorten (`80`, `443`, `5106`).
-
-### Stap 3: .NET installeren
+**2. .NET installeren**
 
 ```bash
 sudo apt-get update && sudo apt-get install -y dotnet-sdk-10.0
 ```
 
-### Stap 4: CloudShirt clonen en starten
+**3. CloudShirt clonen en starten**
 
 ```bash
 git clone https://github.com/Stensel8/CloudShirt.git
 cd CloudShirt
-./scripts/run-dotnet.ps1
+.\scripts\run-dotnet.ps1
 ```
 
-### Stap 5: Testen
+**4. Testen**
 
-Open de browser en navigeer naar het publieke IP-adres van je EC2-instantie.
-
-{{< /steps >}}
+Open de browser en navigeer naar het publieke IP van de EC2-instantie.
