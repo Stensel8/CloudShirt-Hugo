@@ -701,7 +701,14 @@ func (a *app) handleOrdersMe(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	orders, err := a.loadOrders(r.Context(), "WHERE user_id = $1", authUser.ID)
+	sessionID := strings.TrimSpace(r.URL.Query().Get("sessionId"))
+
+	var orders []order
+	if sessionID != "" {
+		orders, err = a.loadOrders(r.Context(), "WHERE user_id = $1 OR session_id = $2", authUser.ID, sessionID)
+	} else {
+		orders, err = a.loadOrders(r.Context(), "WHERE user_id = $1", authUser.ID)
+	}
 	if err != nil {
 		http.Error(w, "failed to load orders", http.StatusInternalServerError)
 		return
@@ -731,7 +738,7 @@ func (a *app) handleOrdersBySession(w http.ResponseWriter, r *http.Request) {
 	writeJSON(w, http.StatusOK, map[string]any{"orders": orders})
 }
 
-func (a *app) loadOrders(ctx context.Context, whereClause string, arg any) ([]order, error) {
+func (a *app) loadOrders(ctx context.Context, whereClause string, args ...any) ([]order, error) {
 	query := `
 SELECT id, session_id, COALESCE(email, ''), status, total_amount::float8, created_at
 FROM orders
@@ -739,7 +746,7 @@ FROM orders
 ORDER BY created_at DESC;
 `
 
-	rows, err := a.db.Query(ctx, query, arg)
+	rows, err := a.db.Query(ctx, query, args...)
 	if err != nil {
 		return nil, err
 	}
@@ -786,4 +793,3 @@ ORDER BY id;
 
 	return items, nil
 }
-

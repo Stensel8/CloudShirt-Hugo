@@ -70,7 +70,8 @@
   }
 
   async function getOrdersForUser() {
-    const payload = await fetchJSON(`${apiBase}/orders/me`, {
+    const query = sessionId ? `?sessionId=${encodeURIComponent(sessionId)}` : "";
+    const payload = await fetchJSON(`${apiBase}/orders/me${query}`, {
       headers: getAuthHeaders(),
     });
     return Array.isArray(payload.orders) ? payload.orders : [];
@@ -166,6 +167,7 @@
     wrapper.setAttribute("data-nav-account-root", "");
     const loginHref = links && links.login ? links.login : "/login/";
     const ordersHref = links && links.orders ? links.orders : "/orders/";
+    const accountHref = links && links.account ? links.account : "/account/";
     wrapper.innerHTML = `
       <a class="cs-nav-account__login" href="${loginHref}" data-nav-account-login-direct>LOGIN</a>
       <button class="cs-nav-account__toggle" type="button" data-nav-account-toggle aria-haspopup="menu" aria-expanded="false" hidden>
@@ -175,7 +177,7 @@
       <div class="cs-nav-account__menu" data-nav-account-menu hidden>
         <a class="cs-nav-account__item" href="${ordersHref}" data-nav-account-admin hidden>ADMIN</a>
         <a class="cs-nav-account__item" href="${ordersHref}" data-nav-account-orders>MY ORDERS</a>
-        <a class="cs-nav-account__item" href="/login/" data-nav-account-my-account>MY ACCOUNT</a>
+        <a class="cs-nav-account__item" href="${accountHref}" data-nav-account-my-account>MY ACCOUNT</a>
         <button class="cs-nav-account__item" type="button" data-nav-account-logout>LOG OUT</button>
       </div>
     `;
@@ -242,6 +244,7 @@
       const accountNode = buildNavbarAccountNode(isMobile, {
         login: loginLinks[0].getAttribute("href") || "/login/",
         orders: ordersLink ? ordersLink.getAttribute("href") : "/orders/",
+        account: "/account/",
       });
       const anchorToReplace = loginLinks[0];
       const replaceTarget = isMobile && anchorToReplace.parentElement && anchorToReplace.parentElement.classList.contains("px-2")
@@ -332,6 +335,23 @@
     localStorage.removeItem(authTokenStorageKey);
   }
 
+  async function hydrateAuthFromStorage() {
+    authToken = localStorage.getItem(authTokenStorageKey) || "";
+    authUser = null;
+
+    if (!authToken) {
+      return null;
+    }
+
+    try {
+      authUser = await loadAuthMe();
+      return authUser;
+    } catch (error) {
+      await clearAuthSession();
+      return null;
+    }
+  }
+
   function bindNavbarAuthEvents() {
     if (document.body.dataset.csNavbarAuthBound === "1") {
       return;
@@ -384,19 +404,10 @@
     styleCartLinks();
     bindNavbarAuthEvents();
 
-    authToken = localStorage.getItem(authTokenStorageKey) || "";
-    if (authToken) {
-      void (async () => {
-        try {
-          authUser = await loadAuthMe();
-        } catch (error) {
-          await clearAuthSession();
-        }
-        syncNavbarAuthUI();
-      })();
-    } else {
+    void (async () => {
+      await hydrateAuthFromStorage();
       syncNavbarAuthUI();
-    }
+    })();
 
     if (!loginPage) {
       return;
@@ -504,10 +515,85 @@
     });
   }
 
+  function bootstrapAccountPage() {
+    const accountPage = document.querySelector("[data-account-page]");
+    if (!accountPage) {
+      return;
+    }
+
+    ensureNavbarAuthMenus();
+    styleCartLinks();
+    bindNavbarAuthEvents();
+
+    void (async () => {
+      sessionId = getSessionId();
+      await hydrateAuthFromStorage();
+      syncNavbarAuthUI();
+
+      const guestNode = accountPage.querySelector("[data-account-guest]");
+      const profileNode = accountPage.querySelector("[data-account-profile]");
+      const ordersNode = accountPage.querySelector("[data-account-orders]");
+      const displayNameNode = accountPage.querySelector("[data-account-display-name]");
+      const emailNode = accountPage.querySelector("[data-account-email]");
+      const roleNode = accountPage.querySelector("[data-account-role]");
+      const createdNode = accountPage.querySelector("[data-account-created]");
+      const logoutButton = accountPage.querySelector("[data-account-logout]");
+
+      if (!authUser) {
+        if (guestNode) {
+          guestNode.hidden = false;
+        }
+        if (profileNode) {
+          profileNode.hidden = true;
+        }
+        return;
+      }
+
+      if (guestNode) {
+        guestNode.hidden = true;
+      }
+      if (profileNode) {
+        profileNode.hidden = false;
+      }
+
+      if (displayNameNode) {
+        displayNameNode.textContent = authUser.displayName || authUser.email;
+      }
+      if (emailNode) {
+        emailNode.textContent = authUser.email || "-";
+      }
+      if (roleNode) {
+        roleNode.textContent = String(authUser.role || "user").toUpperCase();
+      }
+      if (createdNode) {
+        createdNode.textContent = "Actief";
+      }
+
+      if (ordersNode) {
+        try {
+          const myOrders = await getOrdersForUser();
+          const openOrders = myOrders.filter((order) => String(order.status || "").toLowerCase() === "submitted").length;
+          ordersNode.textContent = `${myOrders.length} totaal, ${openOrders} open`;
+        } catch (error) {
+          ordersNode.textContent = "Niet beschikbaar";
+        }
+      }
+
+      if (logoutButton) {
+        logoutButton.addEventListener("click", async () => {
+          await clearAuthSession();
+          syncNavbarAuthUI();
+          window.location.href = "/login/?returnTo=/account/";
+        });
+      }
+    })();
+  }
+
   function initialize() {
     const root = document.querySelector("[data-cloudshirt-storefront]");
     if (!root) {
       bootstrapLoginPage();
+      bootstrapAccountPage();
       return;
     }
 
@@ -1050,16 +1136,7 @@
       try {
         await checkApiHealth();
 
-        authToken = localStorage.getItem(authTokenStorageKey) || "";
-        if (authToken) {
-          try {
-            authUser = await loadAuthMe();
-          } catch (error) {
-            authToken = "";
-            authUser = null;
-            localStorage.removeItem(authTokenStorageKey);
-          }
-        }
+        await hydrateAuthFromStorage();
 
         setAuthUI();
 
