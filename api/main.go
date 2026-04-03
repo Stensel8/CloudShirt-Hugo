@@ -371,6 +371,15 @@ DO UPDATE SET user_id = EXCLUDED.user_id, updated_at = NOW();
 		return err
 	}
 
+	_, err = tx.Exec(ctx, `
+UPDATE orders
+SET user_id = $2
+WHERE session_id = $1 AND user_id IS NULL;
+`, targetSessionID, userID)
+	if err != nil {
+		return err
+	}
+
 	sourceRows, err := tx.Query(ctx, `
 SELECT session_id
 FROM baskets
@@ -432,6 +441,15 @@ DO UPDATE SET
 		}
 
 		_, err = tx.Exec(ctx, "DELETE FROM basket_items WHERE session_id = $1", sourceSessionID)
+		if err != nil {
+			return err
+		}
+
+		_, err = tx.Exec(ctx, `
+UPDATE orders
+SET session_id = $2, user_id = $3
+WHERE session_id = $1;
+`, sourceSessionID, targetSessionID, userID)
 		if err != nil {
 			return err
 		}
@@ -701,14 +719,7 @@ func (a *app) handleOrdersMe(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	sessionID := strings.TrimSpace(r.URL.Query().Get("sessionId"))
-
-	var orders []order
-	if sessionID != "" {
-		orders, err = a.loadOrders(r.Context(), "WHERE user_id = $1 OR session_id = $2", authUser.ID, sessionID)
-	} else {
-		orders, err = a.loadOrders(r.Context(), "WHERE user_id = $1", authUser.ID)
-	}
+	orders, err := a.loadOrders(r.Context(), "WHERE user_id = $1", authUser.ID)
 	if err != nil {
 		http.Error(w, "failed to load orders", http.StatusInternalServerError)
 		return

@@ -65,13 +65,15 @@
   }
 
   async function getOrdersBySession() {
+    if (authUser) {
+      return [];
+    }
     const payload = await fetchJSON(`${apiBase}/orders/${encodeURIComponent(sessionId)}`);
     return Array.isArray(payload.orders) ? payload.orders : [];
   }
 
   async function getOrdersForUser() {
-    const query = sessionId ? `?sessionId=${encodeURIComponent(sessionId)}` : "";
-    const payload = await fetchJSON(`${apiBase}/orders/me${query}`, {
+    const payload = await fetchJSON(`${apiBase}/orders/me`, {
       headers: getAuthHeaders(),
     });
     return Array.isArray(payload.orders) ? payload.orders : [];
@@ -566,7 +568,10 @@
         roleNode.textContent = String(authUser.role || "user").toUpperCase();
       }
       if (createdNode) {
-        createdNode.textContent = "Actief";
+        const created = authUser.createdAt ? new Date(authUser.createdAt) : null;
+        createdNode.textContent = created && !Number.isNaN(created.getTime())
+          ? created.toLocaleDateString("nl-NL")
+          : "Onbekend";
       }
 
       if (ordersNode) {

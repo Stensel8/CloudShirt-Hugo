@@ -92,11 +92,11 @@ func (a *app) readAuthUser(r *http.Request) (*userResponse, error) {
 
 	var user userResponse
 	err := a.db.QueryRow(r.Context(), `
-SELECT u.id, u.email, u.display_name, u.role
+SELECT u.id, u.email, u.display_name, u.role, u.created_at
 FROM auth_sessions s
 JOIN users u ON u.id = s.user_id
 WHERE s.token = $1 AND s.expires_at > NOW();
-`, token).Scan(&user.ID, &user.Email, &user.DisplayName, &user.Role)
+`, token).Scan(&user.ID, &user.Email, &user.DisplayName, &user.Role, &user.CreatedAt)
 	if err != nil {
 		return nil, err
 	}

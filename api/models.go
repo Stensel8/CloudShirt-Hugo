@@ -55,10 +55,11 @@ type registerRequest struct {
 }
 
 type userResponse struct {
-	ID          int64  `json:"id"`
-	Email       string `json:"email"`
-	DisplayName string `json:"displayName"`
-	Role        string `json:"role"`
+	ID          int64     `json:"id"`
+	Email       string    `json:"email"`
+	DisplayName string    `json:"displayName"`
+	Role        string    `json:"role"`
+	CreatedAt   time.Time `json:"createdAt"`
 }
 
 type loginResponse struct {
@@ -75,4 +76,3 @@ type order struct {
 	CreatedAt time.Time    `json:"createdAt"`
 	Items     []basketItem `json:"items"`
 }
-

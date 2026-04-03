@@ -7,10 +7,16 @@
       return existing;
     }
 
-    const generated =
-      typeof crypto !== "undefined" && crypto.randomUUID
-        ? crypto.randomUUID()
-        : `cs-${Date.now()}-${Math.floor(Math.random() * 100000)}`;
+    let generated = "";
+    if (typeof crypto !== "undefined" && crypto.randomUUID) {
+      generated = crypto.randomUUID();
+    } else if (typeof crypto !== "undefined" && crypto.getRandomValues) {
+      const bytes = new Uint8Array(16);
+      crypto.getRandomValues(bytes);
+      generated = `cs-${Array.from(bytes, (byte) => byte.toString(16).padStart(2, "0")).join("")}`;
+    } else {
+      generated = `cs-${Date.now()}`;
+    }
     localStorage.setItem(sessionStorageKey, generated);
     return generated;
   }
