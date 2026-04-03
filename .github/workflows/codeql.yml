@@ -1,48 +1,14 @@
-name: "CodeQL Advanced"
+name: "CodeQL"
 
 on:
   push:
-    branches: [ "main", "NET-10" ]
+    branches: ["main"]
   pull_request:
-    branches: [ "main", "NET-10" ]
+    branches: ["main"]
   schedule:
     - cron: '44 16 * * 5'
 
 jobs:
-  analyze-csharp:
-    name: Analyze (csharp)
-    runs-on: ubuntu-latest
-    permissions:
-      security-events: write
-      packages: read
-      actions: read
-      contents: read
-
-    steps:
-    - name: Checkout repository
-      uses: actions/checkout@v6
-
-    - name: Setup .NET
-      uses: actions/setup-dotnet@v5
-      with:
-        dotnet-version: '10.0.x'
-
-    - name: Initialize CodeQL
-      uses: github/codeql-action/init@v4
-      with:
-        languages: csharp
-        build-mode: manual
-
-    - name: Build solution for CodeQL
-      run: |
-        dotnet restore ./eShopOnWeb.sln
-        dotnet build ./eShopOnWeb.sln --configuration Release --no-restore
-
-    - name: Perform CodeQL Analysis
-      uses: github/codeql-action/analyze@v4
-      with:
-        category: "/language:csharp"
-
   analyze-actions:
     name: Analyze (actions)
     runs-on: ubuntu-latest
@@ -54,7 +20,7 @@ jobs:
 
     steps:
     - name: Checkout repository
-      uses: actions/checkout@v6
+      uses: actions/checkout@v4
 
     - name: Initialize CodeQL
       uses: github/codeql-action/init@v4

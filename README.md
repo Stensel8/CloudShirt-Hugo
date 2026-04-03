@@ -1,87 +1,33 @@
-# CloudShirt
+# CloudShirt – Hugo Edition
 
-Korte implementatierepository voor schoolopdrachten binnen de Cloud Engineering-specialisatie.
+Een lichte Hugo-website voor schoolopdrachten binnen de Cloud Engineering-specialisatie.
 
-Deze applicatie is gebaseerd op een Saxion-docentenvariant en door mij omgebouwd voor opdrachten in Cloud Automation Concepts onder de naam CloudShirt.
+Dit is de Hugo-variant van [CloudShirt](https://github.com/Stensel8/CloudShirt), gebouwd met [Hugo](https://gohugo.io/) en het [Blowfish](https://blowfish.page/)-thema. Gedeployed via Docker (nginx).
 
-Gekoppelde module-repository:
-- https://github.com/Stensel8/cloud-engineering/tree/main/cloud-automation-concepts
+Gekoppelde module-repository: [cloud-engineering](https://github.com/Stensel8/cloud-engineering/tree/main/cloud-automation-concepts)
 
-Gebruik in opdrachten:
-- Assignment 1: AWS Basics
-- Assignment 2: Docker in the Cloud
-- Assignment 3: Cloud Orchestration
+---
 
-## Starten en stoppen
+## Lokale ontwikkeling
 
-Gebruik de scripts in de map scripts:
+**Vereisten:** Hugo extended ≥ v0.159.2 en Go ≥ v1.24.
 
-```powershell
-.\scripts\run-dotnet.ps1
+```bash
+hugo server        # development server
+hugo --gc --minify # productie-build
 ```
 
-```powershell
-.\scripts\run-docker.ps1
+## Docker
+
+```bash
+docker compose up -d   # start op http://localhost:8080
+docker compose down    # stoppen
 ```
 
-Stoppen:
+## Technische stack
 
-```powershell
-.\scripts\stop-dotnet.ps1
-```
-
-```powershell
-.\scripts\stop-docker.ps1
-```
-
-Deze scripts gebruiken de waarden uit .env (of maken die aan vanuit .env.example).
-Als een variant al draait, geven de run-scripts een herstartmelding en starten opnieuw op.
-
-## 1) Lokale .NET app (.NET 10)
-
-Monolithische variant. Draait lokaal in één app met SQLite.
-
-### Starten
-
-```powershell
-.\scripts\run-dotnet.ps1
-```
-
-Tests:
-
-```powershell
-dotnet test .\*.sln
-```
-
-## 2) Docker app (containers)
-
-Containervariant. Draait met Docker Compose en PostgreSQL.
-
-### Starten
-
-```powershell
-.\scripts\run-docker.ps1
-```
-
-## Wanneer gebruik je welke variant?
-
-- Lokale .NET variant: snel opstarten en debuggen, geen Docker nodig, data in SQLite.
-- Docker variant: test de containersetup zoals die ook in de cloud draait, data in PostgreSQL.
-
-## Data en state
-
-- SQLite (lokale .NET) en PostgreSQL (Docker) delen niet automatisch dezelfde data/state.
-- Bij wisselen van modus start je dus met de state van de bijbehorende database.
-
-## Demo
-
-![Demo screenshot](demo.avif)
-
-<video src="Short-Demo.webm" controls playsinline width="100%"></video>
-
-[Bekijk demo (WebM)](Short-Demo.webm)
-
-## Credits
-
-- Originele upstream: https://github.com/dotnet-architecture/eShopOnWeb
-- Fork-basis voor deze variant: https://github.com/looking4ward/CloudShirt
+| Onderdeel | Versie |
+|---|---|
+| Hugo (extended) | v0.159.2 |
+| Blowfish theme | v2.101.0 |
+| nginx | 1.29.7-alpine-slim |
