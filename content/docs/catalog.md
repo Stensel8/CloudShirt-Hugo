@@ -29,4 +29,4 @@ CloudShirt bevat een breed voorgeseed assortiment, waaronder:
 - SQL- en DBA-shirts
 - Visual Studio- en developer-culture ontwerpen
 
-De catalogusinhoud wordt in de hoofdapp ges seeded en is hier als productgerichte documentatie uitgewerkt.
+De catalogusinhoud wordt in de hoofdapp geseeded en is hier als productgerichte documentatie uitgewerkt.
