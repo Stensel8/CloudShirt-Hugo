@@ -252,12 +252,15 @@
   .cs-storefront__grid {
     display: grid;
     gap: .85rem;
-    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    grid-template-columns: repeat(auto-fit, minmax(220px, 280px));
+    justify-content: center;
   }
 
   .cs-product {
     display: flex;
     flex-direction: column;
+    width: 100%;
+    max-width: 280px;
     overflow: hidden;
     border-radius: 1rem;
     border: 1px solid var(--cs-border);
@@ -403,6 +406,73 @@
     color: var(--cs-muted);
     font-size: .9rem;
     line-height: 1.55;
+  }
+
+  .cs-storefront__checkout-grid {
+    display: grid;
+    gap: .85rem;
+    grid-template-columns: minmax(0, 1.45fr) minmax(280px, .85fr);
+    align-items: start;
+  }
+
+  .cs-storefront[data-cloudshirt-view="cart"] {
+    gap: .85rem;
+  }
+
+  .cs-storefront[data-cloudshirt-view="cart"] .cs-storefront__hero-panel {
+    padding: .85rem 0 0;
+    border: 0;
+    border-radius: 0;
+    background: transparent;
+    box-shadow: none;
+    min-height: 0;
+  }
+
+  .cs-storefront[data-cloudshirt-view="cart"] .cs-storefront__title {
+    font-size: clamp(1.7rem, 3vw, 2.7rem);
+  }
+
+  .cs-storefront[data-cloudshirt-view="cart"] .cs-storefront__description {
+    max-width: 50ch;
+    font-size: .95rem;
+  }
+
+  .cs-storefront[data-cloudshirt-view="cart"] .cs-storefront__checkout {
+    padding: 0;
+    border: 0;
+    border-radius: 0;
+    background: transparent;
+    box-shadow: none;
+  }
+
+  .cs-storefront[data-cloudshirt-view="cart"] .cs-storefront__checkout > .cs-storefront__section-header {
+    margin-bottom: .7rem;
+    padding: 0 .1rem;
+  }
+
+  .cs-storefront[data-cloudshirt-view="cart"] .cs-storefront__section {
+    background: rgba(var(--color-neutral-950), 0.32);
+    border-color: rgba(var(--color-neutral-200), 0.12);
+  }
+
+  .cs-storefront[data-cloudshirt-view="cart"] .cs-cart {
+    background: rgba(var(--color-neutral-950), 0.28);
+  }
+
+  .cs-storefront[data-cloudshirt-view="cart"] .cs-cart__item {
+    grid-template-columns: 84px minmax(0, 1fr) auto;
+    background: rgba(var(--color-neutral-900), 0.36);
+    border-color: rgba(var(--color-neutral-200), 0.1);
+    padding: .55rem;
+  }
+
+  .cs-storefront[data-cloudshirt-view="cart"] .cs-cart__thumb {
+    width: 84px;
+    height: 84px;
+  }
+
+  .cs-storefront[data-cloudshirt-view="cart"] .cs-cart__controls {
+    justify-content: flex-start;
   }
 
   .cs-order-list {
@@ -564,6 +634,10 @@
 
     .cs-storefront__hero,
     .cs-storefront__toolbar {
+      grid-template-columns: 1fr;
+    }
+
+    .cs-storefront__checkout-grid {
       grid-template-columns: 1fr;
     }
 
