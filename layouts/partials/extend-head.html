@@ -164,18 +164,19 @@
 
   .cs-nav-cart__badge {
     position: absolute;
-    top: .08rem;
-    right: .12rem;
-    min-width: 1.22rem;
-    height: 1.22rem;
+    top: -.12rem;
+    right: -.18rem;
+    min-width: 1.36rem;
+    height: 1.36rem;
     border-radius: 999px;
-    background: #83d01b;
+    background: #8fd81d;
     color: #ffffff;
-    font-size: .75rem;
-    font-weight: 700;
+    font-size: .78rem;
+    font-weight: 800;
     display: grid;
     place-items: center;
-    padding: 0 .25rem;
+    padding: 0 .28rem;
+    box-shadow: 0 0 0 2px rgba(10, 16, 30, 0.9), 0 8px 16px rgba(0, 0, 0, 0.35);
   }
 
   .cs-nav-cart__badge--empty {
@@ -191,6 +192,35 @@
   .cs-nav-account__menu.cs-hidden,
   .cs-nav-account__item.cs-hidden {
     display: none;
+  }
+
+  .cs-button {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: .45rem;
+    min-height: 2.35rem;
+    padding: .45rem .9rem;
+    border-radius: 999px;
+    border: 1px solid rgba(var(--color-neutral-200), 0.18);
+    background: rgba(var(--color-neutral-800), 0.82);
+    color: rgb(var(--color-neutral-100));
+    font-size: .9rem;
+    font-weight: 600;
+    text-decoration: none;
+    cursor: pointer;
+    transition: transform .18s ease, border-color .18s ease, background-color .18s ease;
+  }
+
+  .cs-button:hover {
+    transform: translateY(-1px);
+    border-color: rgba(var(--color-primary-400), 0.44);
+  }
+
+  .cs-button--accent {
+    border-color: rgba(var(--color-primary-400), 0.34);
+    background: rgba(var(--color-primary-500), 0.22);
+    color: rgb(var(--color-primary-100));
   }
 </style>
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
