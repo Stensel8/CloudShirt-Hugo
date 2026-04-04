@@ -1,0 +1,5 @@
+.git
+.hugo_build.lock
+api.exe
+public/
+*.log

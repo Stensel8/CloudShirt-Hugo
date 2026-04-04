@@ -1,0 +1,12 @@
+.git
+.github
+.hugo_build.lock
+docker-compose.yml
+docker-compose.swarm.yml
+scripts/
+api/
+public/
+resources/
+README.md
+LICENSE
+*.log
