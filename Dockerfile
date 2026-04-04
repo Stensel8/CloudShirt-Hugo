@@ -5,7 +5,7 @@ FROM golang:alpine AS builder
 
 ARG HUGO_VERSION=0.159.2
 
-RUN apk add --no-cache git wget tar ca-certificates libc6-compat gcompat && \
+RUN apk add --no-cache git wget tar ca-certificates libc6-compat gcompat libstdc++ libgcc && \
     wget -qO /tmp/hugo.tar.gz \
       "https://github.com/gohugoio/hugo/releases/download/v${HUGO_VERSION}/hugo_extended_${HUGO_VERSION}_linux-amd64.tar.gz" && \
     tar -xzf /tmp/hugo.tar.gz -C /usr/local/bin hugo && \
