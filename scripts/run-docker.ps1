@@ -122,10 +122,16 @@ function Test-ImageExists {
     return $LASTEXITCODE -eq 0
 }
 
-function Try-PullComposeServiceImage {
-    param([string]$ServiceName)
+function Start-ComposeStack {
+    param([bool]$Build)
 
-    docker compose pull $ServiceName
+    if ($Build) {
+        docker compose up -d --build --remove-orphans
+    }
+    else {
+        docker compose up -d --remove-orphans
+    }
+
     return $LASTEXITCODE -eq 0
 }
 
@@ -182,33 +188,19 @@ try {
     $apiImageExists = Test-ImageExists -ImageName "cloudshirt-go-api:latest"
 
     if (-not ($webImageExists -and $apiImageExists)) {
-        Write-Output "Lokale images ontbreken. Eerst prebuilt images proberen te pullen."
-        [void](Try-PullComposeServiceImage -ServiceName "web")
-        [void](Try-PullComposeServiceImage -ServiceName "api")
-
-        $webImageExists = Test-ImageExists -ImageName "cloudshirt-go-web:latest"
-        $apiImageExists = Test-ImageExists -ImageName "cloudshirt-go-api:latest"
-
-        if ($webImageExists -and $apiImageExists) {
-            Write-Output "Prebuilt images gevonden. Start zonder lokale build."
-            docker compose up -d --remove-orphans
-        }
-        else {
-            Write-Output "Geen bruikbare prebuilt images gevonden. Eenmalige build wordt uitgevoerd."
-            docker compose up -d --build --remove-orphans
-        }
-
-        if ($LASTEXITCODE -ne 0) {
+        Write-Output "Lokale images ontbreken. Eenmalige build wordt uitgevoerd."
+        $started = Start-ComposeStack -Build $true
+        if (-not $started) {
             Write-Output "FOUT: Docker build/start is mislukt. Stoppen zonder endpoint checks."
-            exit $LASTEXITCODE
+            exit 1
         }
     }
     else {
         Write-Output "Snelle modus: bestaande images/caches worden hergebruikt."
-        docker compose up -d --remove-orphans
-        if ($LASTEXITCODE -ne 0) {
+        $started = Start-ComposeStack -Build $false
+        if (-not $started) {
             Write-Output "FOUT: Docker start is mislukt. Stoppen zonder endpoint checks."
-            exit $LASTEXITCODE
+            exit 1
         }
     }
 
