@@ -1,8 +1,8 @@
 colorScheme = "blowfish"
 defaultAppearance = "dark"
-autoSwitchAppearance = true
+autoSwitchAppearance = false
 
-enableSearch = true
+enableSearch = false
 enableCodeCopy = true
 
 [header]
@@ -11,7 +11,7 @@ enableCodeCopy = true
 [footer]
   showCopyright = true
   showThemeAttribution = true
-  showAppearanceSwitcher = true
+  showAppearanceSwitcher = false
   showScrollToTop = true
 
 [homepage]

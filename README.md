@@ -1,33 +1,46 @@
-# CloudShirt – Hugo Edition
+# CloudShirt-Hugo (Go + Hugo)
 
-Een lichte Hugo-website voor schoolopdrachten binnen de Cloud Engineering-specialisatie.
+Demo-project voor school als microservices-variant:
 
-Dit is de Hugo-variant van [CloudShirt](https://github.com/Stensel8/CloudShirt), gebouwd met [Hugo](https://gohugo.io/) en het [Blowfish](https://blowfish.page/)-thema. Gedeployed via Docker (nginx).
+- Web: Hugo + nginx
+- API: Go
+- Database: PostgreSQL
 
-Gekoppelde module-repository: [cloud-engineering](https://github.com/Stensel8/cloud-engineering/tree/main/cloud-automation-concepts)
+Dit project draait alleen als Docker/microservices (geen monolietmodus).
 
----
+## Starten
 
-## Lokale ontwikkeling
-
-**Vereisten:** Hugo extended ≥ v0.159.2 en Go ≥ v1.24.
-
-```bash
-hugo server        # development server
-hugo --gc --minify # productie-build
+```powershell
+.\scripts\run-docker.ps1
 ```
 
-## Docker
+Swarm:
 
-```bash
-docker compose up -d   # start op http://localhost:8080
-docker compose down    # stoppen
+```powershell
+.\scripts\run-swarm.ps1
 ```
 
-## Technische stack
+## Stoppen
 
-| Onderdeel | Versie |
-|---|---|
-| Hugo (extended) | v0.159.2 |
-| Blowfish theme | v2.101.0 |
-| nginx | 1.29.7-alpine-slim |
+```powershell
+.\scripts\stop-docker.ps1
+.\scripts\stop-swarm.ps1
+```
+
+## Demo-poorten
+
+- Web: http://localhost:5106
+- API direct: http://localhost:5200/api/health
+- API via web proxy: http://localhost:5106/api/health
+- PostgreSQL: localhost:5432
+
+## Demo users
+
+- User: demouser@microsoft.com / Pass@word1
+- Admin: admin@microsoft.com / Pass@word1
+
+## Doel
+
+Dit project laat zien dat dezelfde CloudShirt-use-case ook werkt als:
+
+- Go/Hugo microservices

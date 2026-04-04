@@ -1,25 +1,69 @@
+version: "3.8"
+
 services:
   web:
-    image: ${ECR_IMAGE}
+    image: cloudshirt-go-web:latest
     ports:
-      - "80:80"
+      - target: 80
+        published: 5106
+        protocol: tcp
+        mode: host
     deploy:
-      replicas: 2
+      replicas: 1
       restart_policy:
         condition: on-failure
-        delay: 5s
-        max_attempts: 3
-      update_config:
-        parallelism: 1
-        delay: 30s
-        failure_action: rollback
-      resources:
-        limits:
-          cpus: "0.5"
-          memory: 512M
     healthcheck:
       test: ["CMD-SHELL", "wget -qO- http://localhost/ > /dev/null || exit 1"]
       interval: 10s
       timeout: 5s
       retries: 5
-      start_period: 30s
+      start_period: 20s
+
+  api:
+    image: cloudshirt-go-api:latest
+    environment:
+      API_ADDR: ":8081"
+      DATABASE_URL: "postgres://cloudshirt:cloudshirt@db:5432/cloudshirt?sslmode=disable"
+      CATALOG_JSON_PATH: "/app/data/cloudshirt/catalog.json"
+    ports:
+      - target: 8081
+        published: 5200
+        protocol: tcp
+        mode: host
+    deploy:
+      replicas: 1
+      restart_policy:
+        condition: on-failure
+    healthcheck:
+      test: ["CMD-SHELL", "wget -qO- http://localhost:8081/api/health > /dev/null || exit 1"]
+      interval: 10s
+      timeout: 5s
+      retries: 8
+      start_period: 20s
+
+  db:
+    image: postgres:18-alpine
+    environment:
+      POSTGRES_USER: cloudshirt
+      POSTGRES_PASSWORD: cloudshirt
+      POSTGRES_DB: cloudshirt
+    ports:
+      - target: 5432
+        published: 5432
+        protocol: tcp
+        mode: host
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+    deploy:
+      replicas: 1
+      restart_policy:
+        condition: on-failure
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U cloudshirt -d cloudshirt"]
+      interval: 10s
+      timeout: 5s
+      retries: 8
+      start_period: 20s
+
+volumes:
+  postgres-data:
