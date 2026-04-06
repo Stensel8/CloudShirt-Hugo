@@ -43,6 +43,8 @@ try {
     docker compose build web api
 
     Write-Section "Stack deployen"
+    $env:ECR_WEB_IMAGE = "cloudshirt-go-web:latest"
+    $env:ECR_API_IMAGE = "cloudshirt-go-api:latest"
     docker stack deploy -c .\docker-compose.swarm.yml cloudshirt-hugo
 
     Write-Section "Services"
