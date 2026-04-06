@@ -1,8 +1,12 @@
-version: "3.8"
+networks:
+  cloudshirt_net:
+    driver: overlay
 
 services:
   web:
     image: "${ECR_WEB_IMAGE:-cloudshirt-go-web:latest}"
+    networks:
+      - cloudshirt_net
     ports:
       - target: 80
         published: 80
@@ -27,6 +31,8 @@ services:
 
   api:
     image: "${ECR_API_IMAGE:-cloudshirt-go-api:latest}"
+    networks:
+      - cloudshirt_net
     environment:
       API_ADDR: ":8081"
       DATABASE_URL: "postgres://cloudshirt:cloudshirt@db:5432/cloudshirt?sslmode=disable"
@@ -46,6 +52,8 @@ services:
 
   db:
     image: postgres:18-alpine
+    networks:
+      - cloudshirt_net
     environment:
       POSTGRES_USER: cloudshirt
       POSTGRES_PASSWORD: cloudshirt
