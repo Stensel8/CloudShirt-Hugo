@@ -1,4 +1,4 @@
-# syntax=docker/dockerfile:1.7
+# syntax=docker/dockerfile:1.23
 
 # Stage 1: Build the Hugo site with a lighter Go toolchain image and downloaded Hugo binary.
 FROM golang:alpine AS builder
