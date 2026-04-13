@@ -37,7 +37,7 @@ jobs:
           hugo version
 
       - name: Hugo module cache
-        uses: actions/cache@v5.0.4
+        uses: actions/cache@v5.0.5
         with:
           path: /root/.cache/hugo_cache
           key: ${{ runner.os }}-hugo-${{ hashFiles('**/go.sum') }}
