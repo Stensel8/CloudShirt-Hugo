@@ -27,7 +27,7 @@ RUN --mount=type=cache,target=/go/pkg/mod \
   hugo --gc --minify --baseURL /
 
 # Stage 2: Serve with nginx
-FROM nginx:1.29.8-alpine-slim
+FROM nginx:1.30.0-alpine-slim
 
 COPY --from=builder /site/public /usr/share/nginx/html
 
